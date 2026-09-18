@@ -11,7 +11,6 @@ An interactive HTML presentation by **KLC Constructions** for Brigade Group.
 | --- | --- |
 | `→` / `space` | Next slide |
 | `←` | Previous slide |
-| `N` | Presenter notes for the current slide |
 | `M` | Slide index |
 | `F` | Fullscreen |
 
@@ -37,10 +36,11 @@ Photographs in `assets/` are placeholders. Replace a file with your own, keeping
 | `controls.jpg` | Project controls |
 | `closing.jpg` | Our commitment |
 | `build-timelapse.mp4` | Structure (drives the phase captions) |
-| `site-logistics-plan.png` | Logistics — not yet supplied |
-| `typical-floor-plan.png` | Not yet used |
+
 
 Empty slots show a dashed placeholder; you can also drag an image onto one to preview it without saving.
+
+The logistics slide now carries a generic site plan drawn in the page — swap it for the issued drawing when it is available.
 
 ## Known content conflicts
 
