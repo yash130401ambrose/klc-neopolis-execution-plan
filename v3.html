@@ -285,16 +285,18 @@ button:focus{outline:0}button:focus-visible{outline:2px solid var(--accent);outl
 /* ============ 9 MACHINERY ============ */
 #s-mach .bg{position:absolute;inset:0;opacity:.14}
 #s-mach .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--ink) 10%,rgba(26,50,45,.6) 50%,var(--ink) 95%)}
-#s-mach .table{position:absolute;left:120px;right:120px;top:350px}
-#s-mach .tr{display:grid;grid-template-columns:60px 480px 320px 1fr;align-items:center;gap:30px;padding:8px 0;border-bottom:1px solid var(--line-d)}
+#s-mach .table{position:absolute;left:120px;right:120px;top:290px}
+#s-mach .tr{display:grid;grid-template-columns:60px 500px 300px 1fr;align-items:center;gap:30px;padding:6px 0;border-bottom:1px solid var(--line-d)}
 #s-mach .tr .ic{color:var(--accent-d)}
 #s-mach .tr .ic svg{width:30px;height:30px}
-#s-mach .tr .nm{font-size:23px;font-weight:600}
+#s-mach .tr .nm{font-size:21px;font-weight:600}
 #s-mach .units{display:flex;gap:8px;align-items:center}
 #s-mach .units i{width:40px;height:20px;border-radius:1px;background:var(--accent-d);transform:scaleY(0);transform-origin:bottom;transition:transform .6s var(--ease)}
 #s-mach .units i.on{transform:none}
 #s-mach .units b{font-size:28px;font-weight:700;margin-left:14px}
-#s-mach .pp{font-size:19px;color:#D6DDD6}
+#s-mach .pp{font-size:18px;color:#D6DDD6}
+#s-mach .pp small{display:block;font-size:14px;color:var(--accent-d);margin-top:2px}
+#s-mach .mnote{margin-top:22px;font-size:16px;font-style:italic;color:var(--muted-d)}
 
 /* ============ 10 FINISHING ============ */
 #s-fin .elev{position:absolute;left:200px;top:330px;width:520px;height:650px}
@@ -463,6 +465,8 @@ button:focus{outline:0}button:focus-visible{outline:2px solid var(--accent);outl
   <symbol id="i-tractor" viewBox="0 0 32 32"><path d="M4 20V13h10l2-6h6v12M9 26a4 4 0 1 0 0 .1M24 26a3 3 0 1 0 0 .1M13 25h8"/></symbol>
   <symbol id="i-pump" viewBox="0 0 32 32"><path d="M4 24h12v-8H4zM16 20h4l8-12M24 8h5M8 28a2 2 0 1 0 0 .1M14 28a2 2 0 1 0 0 .1"/></symbol>
   <symbol id="i-pipe" viewBox="0 0 32 32"><path d="M3 12h10v8H3zM13 16h10a4 4 0 0 0 4-4V5M24 5h6"/></symbol>
+  <symbol id="i-truckboom" viewBox="0 0 32 32"><path d="M3 22h15v-6H3zM18 22h6l3-4v4M7 26a2.5 2.5 0 1 0 0 .1M21 26a2.5 2.5 0 1 0 0 .1M12 16l8-10 8 4M28 10v6"/></symbol>
+  <symbol id="i-rmc" viewBox="0 0 32 32"><path d="M6 4h8v14l-4 4-4-4zM10 22v6M4 28h24M18 14h10v14H18zM18 18h10M14 10h4"/></symbol>
   <symbol id="i-power" viewBox="0 0 32 32"><path d="M4 9h24v16H4zM17 12l-4 6h6l-4 6M8 25v3M24 25v3"/></symbol>
 </svg>
 
@@ -672,7 +676,7 @@ button:focus{outline:0}button:focus-visible{outline:2px solid var(--accent);outl
   <div class="pan">
     <div class="bg img on-dark" data-img="assets/machinery.jpg"><div class="ph">Machinery photo<small>assets/machinery.jpg</small></div></div>
     <div class="label rv"><span><b>08</b>&nbsp;&nbsp;Plant &amp; machinery</span></div>
-    <h2 class="title rv" style="--d:100">The right equipment, <em>brought in as work opens up</em>.</h2>
+    <h2 class="title rv" style="--d:100">The right equipment, <em>as work opens up</em>.</h2>
     <div class="table" id="m-table"></div>
   </div>
 </section>
@@ -1040,17 +1044,20 @@ document.querySelectorAll('[data-img]').forEach(el=>{
    Machinery — unit blocks pop in
    ============================================================ */
 (()=>{
-  const ROWS=[['i-crane','Tower crane',2,'Main lifting, 1.5 MT tip load'],
-    ['i-hoist','Builders / passenger hoist',2,'Materials and people up the tower'],
+  const ROWS=[['i-crane','Tower crane',2,'Vertical material handling','Min. 1.5 MT tip load · handles PSS system'],
+    ['i-hoist','Builders / passenger hoist',2,'Vertical material & passenger movement'],
     ['i-bar','Bar cutting machine',4,'Reinforcement processing'],
     ['i-bar','Bar bending machine',4,'Reinforcement processing'],
-    ['i-pump','Self-propelled boom placer',3,'Concrete placing'],
-    ['i-pipe','Line pump',2,'Concrete pumping'],
-    ['i-bobcat','Bobcat',1,'Material handling on ground'],
-    ['i-tractor','Tractor',1,'Internal site movement'],
-    ['i-power','DG set',1,'Standby power, if in scope']];
+    ['i-bobcat','Bobcat',1,'Material handling / earthwork support'],
+    ['i-tractor','Tractor',1,'Internal material movement'],
+    ['i-pump','Self-propelled boom placer (SPB)',3,'Concrete pumping support'],
+    ['i-pipe','Line pump',3,'Concrete placement support'],
+    ['i-truckboom','Truck boom',1,'Concrete placement at required locations','As per requirement'],
+    ['i-rmc','RMC plant',1,'In-house concrete production & supply'],
+    ['i-power','DG set',1,'Standby / temporary power support','If required · scope-based']];
   const T=document.getElementById('m-table');
-  T.innerHTML=ROWS.map((r,i)=>`<div class="tr rv" style="--d:${300+i*80}"><div class="ic"><svg class="icon"><use href="#${r[0]}"/></svg></div><div class="nm">${r[1]}</div><div class="units">${'<i></i>'.repeat(r[2])}<b>${r[2]}</b></div><div class="pp">${r[3]}</div></div>`).join('');
+  T.innerHTML=ROWS.map((r,i)=>`<div class="tr rv" style="--d:${300+i*80}"><div class="ic"><svg class="icon"><use href="#${r[0]}"/></svg></div><div class="nm">${r[1]}</div><div class="units">${'<i></i>'.repeat(r[2])}<b>${r[2]}</b></div><div class="pp">${r[3]}${r[4]?`<small>${r[4]}</small>`:''}</div></div>`).join('')+
+    `<div class="mnote rv" style="--d:1300">Equipment deployment shall be optimised based on the construction sequence, work fronts, productivity requirements and site conditions.</div>`;
   let timers=[];
   hooks['s-mach']={enter(){timers.forEach(clearTimeout);timers=[];
     T.querySelectorAll('.tr').forEach((row,i)=>row.querySelectorAll('.units i').forEach((u,k)=>{u.classList.remove('on');timers.push(setTimeout(()=>u.classList.add('on'),900+i*80+k*140))}))},
