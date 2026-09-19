@@ -23,7 +23,7 @@ All three files are the same 15-slide deck:
 
 - `index.html` — all 14 stages on a full-width ruler, grouped Foundation / Basement / Podium / Tower / Typical / Roof.
 - `structure-option-2.html` — five phases listed beside the video, each expanding to its breakdown when active.
-- `v3.html` — option 2 with the revised programme: 40 months overall (35 structure + 5 finishing), an 11-day typical floor cycle, 75-day foundation and raft, 2 tower cranes and 3 SPBs.
+- `v3.html` — **Brigade Barcelona**, matching the 18-09-2026 deck: 40 months overall (35 structure + 5 finishing), 11-day typical floor cycle, revised stage durations (raft 30, B1 30, Eco Desk 30, terrace 20 days), 2 tower cranes and 3 SPBs.
 
 ## Images
 
@@ -46,6 +46,4 @@ The logistics slide now carries a generic site plan drawn in the page — swap i
 
 ## Known content conflicts
 
-`index.html` and `structure-option-2.html` still carry the source deck's figures. `v3.html` resolves the floor cycle (11 days throughout) and moves the programme to 40 months. One figure remains to confirm in every version:
-
-- Terrace is **25 days** in the structure sequence but **20 days** on the milestones slide.
+`index.html` and `structure-option-2.html` still carry the original Neopolis figures. `v3.html` follows the Brigade Barcelona deck, except the milestones slide keeps the client's marked-up figures — foundation & raft **75 days** and podium **45 days** — where the deck says 30-day work fronts and 45 + 30 days.

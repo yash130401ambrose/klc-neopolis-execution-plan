@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Brigade Neopolis · Execution Plan (v3)</title>
+<title>Brigade Barcelona · Execution Plan (v3)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -437,6 +437,8 @@ button:focus{outline:0}button:focus-visible{outline:2px solid var(--accent);outl
 #s-end li svg{width:34px;height:34px;flex:none}
 #s-end li svg path{stroke-dasharray:40;stroke-dashoffset:40;transition:stroke-dashoffset .7s var(--ease);transition-delay:calc(var(--d) * 1ms + 900ms)}
 #s-end.active li svg path{stroke-dashoffset:0}
+#s-end .base{margin-top:26px;font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-d)}
+#s-end .base span+span::before{content:"·";margin:0 16px;opacity:.6}
 #s-end .contact{position:absolute;left:120px;right:120px;bottom:132px;display:flex;gap:70px;align-items:flex-end;font-size:18px;color:#D6DDD6;line-height:1.6}
 #s-end .contact b{display:block;color:#F4EFE1;font-weight:600;letter-spacing:.1em;font-size:14px}
 #s-end .contact .ty{margin-left:auto;font-size:15px;letter-spacing:.3em;color:var(--accent-d);text-transform:uppercase}
@@ -475,7 +477,7 @@ button:focus{outline:0}button:focus-visible{outline:2px solid var(--accent);outl
       <div class="kicker rv">PROJECT EXECUTION PLAN</div>
       <h1 class="big">
         <span class="mask"><span style="--d:150">BRIGADE</span></span>
-        <span class="mask"><span style="--d:300" class="o">NEOPOLIS</span></span>
+        <span class="mask"><span style="--d:300" class="o">BARCELONA</span></span>
       </h1>
       <div class="pillars rv" style="--d:600"><span>Safe delivery</span><span>Controlled cycle</span><span>Rolling finishes</span></div>
     </div>
@@ -486,7 +488,7 @@ button:focus{outline:0}button:focus-visible{outline:2px solid var(--accent);outl
     </div>
     <div class="towerCard">
       <div class="img on-dark" data-img="assets/tower.jpg"><div class="ph">Project render<small>assets/tower.jpg</small></div></div>
-      <div class="cap">BRIGADE NEOPOLIS</div>
+      <div class="cap">BRIGADE BARCELONA</div>
     </div>
   </div>
 </section>
@@ -768,6 +770,7 @@ button:focus{outline:0}button:focus-visible{outline:2px solid var(--accent);outl
         <li class="rv" style="--d:760"><svg viewBox="0 0 34 34"><path d="M8 17.5l6 6L27 11" fill="none" stroke="#D9C79E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="--d:760"/></svg>Decisions driven by daily data</li>
         <li class="rv" style="--d:880"><svg viewBox="0 0 34 34"><path d="M8 17.5l6 6L27 11" fill="none" stroke="#D9C79E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="--d:880"/></svg>The 40-month baseline, protected</li>
       </ul>
+      <div class="base rv" style="--d:1000"><span>Updated baseline: 40 months</span><span>Structure: 35 months</span><span>Finishing: 5 months</span></div>
     </div>
     <div class="contact">
       <div class="rv" style="--d:1100"><b>KARRAHE KISHORE KUMAR</b>+91 85000 88888 · kishore@klcconstructions.in</div>
@@ -781,7 +784,7 @@ button:focus{outline:0}button:focus-visible{outline:2px solid var(--accent);outl
 <div class="chrome">
   <img class="logo d" src="assets/klc-logo-dark.png" alt="KLC Constructions">
   <img class="logo l" src="assets/klc-logo-light.png" alt="">
-  <div class="tag">BRIGADE NEOPOLIS · EXECUTION PLAN</div>
+  <div class="tag">BRIGADE BARCELONA · EXECUTION PLAN</div>
   <div class="foot">
     <div class="count"><b id="n-cur">01</b> / <span id="n-tot">14</span></div>
     <div class="bar-wrap"><div class="bar"></div><div class="bar-fill" id="n-bar"></div></div>
@@ -929,11 +932,11 @@ document.querySelectorAll('[data-img]').forEach(el=>{
    ============================================================ */
 (()=>{
   const PH=[
-    {k:'01',n:'Foundation & basement',x:'Raft, footings and two basement levels',d:125,lv:'B1',sub:'PCC 30 · Raft 45 · B2 15 · B1 35 days'},
-    {k:'02',n:'Podium & Eco Desk',    x:'Ground to 4th podium, then the transfer floor',d:210,lv:'ED',sub:'Ground 45 · 1st–4th 30 each · Eco Desk 45 days'},
+    {k:'01',n:'Foundation & basement',x:'Raft, footings and two basement levels',d:105,lv:'B1',sub:'PCC 30 · Raft 30 · B2 15 · B1 30 days'},
+    {k:'02',n:'Podium & Eco Desk',    x:'Ground to 4th podium, then the transfer floor',d:195,lv:'ED',sub:'Ground 45 · 1st–4th 30 each · Eco Desk 30 days'},
     {k:'03',n:'Tower start-up',       x:'1st to 4th floor — mock-up approved, cycle settles',d:145,lv:'04',sub:'60 · 45 · 25 · 15 days'},
     {k:'04',n:'Typical floors',       x:'5th to 52nd floor at 11 days each',d:528,lv:[5,52],sub:'48 floors · 11 days each'},
-    {k:'05',n:'Roof & closure',       x:'Terrace and head room complete the structure',d:70,lv:'HR',sub:'Terrace 25 · Head room 45 days'}];
+    {k:'05',n:'Roof & closure',       x:'Terrace and head room complete the structure',d:65,lv:'HR',sub:'Terrace 20 · Head room 45 days'}];
   const MO=['Month 1–6','Month 5–10','Month 9–14','Month 14–34','Month 34–35'];
   const TOT=PH.reduce((a,p)=>a+p.d,0);
   let acc=0; PH.forEach(p=>{p.f0=acc/TOT;acc+=p.d;p.f1=acc/TOT});
@@ -1061,7 +1064,7 @@ document.querySelectorAll('[data-img]').forEach(el=>{
 (()=>{
   const S=document.getElementById('s-fin'), elev=document.getElementById('f-elev');
   const N=52, REL=3, LAG=[0,10,20,30,38,46,54,62];               // 8 trades, days after release
-  const Sd=f=>f<=1?395:f==2?440:f==3?465:f==4?480:480+(f-4)*11;   // structure complete, per floor
+  const Sd=f=>f<=1?360:f==2?405:f==3?430:f==4?445:445+(f-4)*11;   // structure complete, per floor
   const T=(k,f)=>Sd(Math.min(N,f+REL))+LAG[k];
   const GROUPS=[ // [name, colour, trade index that completes the group (-1 = structure)]
     ['Structure','#1A322D',-1],
@@ -1071,7 +1074,7 @@ document.querySelectorAll('[data-img]').forEach(el=>{
     ['Ready to hand over','#8C6E43',7]];
   const done=(g,f,d)=>GROUPS[g][2]<0?Sd(f)<=d:T(GROUPS[g][2],f)<=d;
   const top=(g,d)=>{let r=0;for(let f=1;f<=N;f++){if(done(g,f,d))r=f;else break}return r};
-  const D0=365, D1=1217, EMPTY='#E8E1CD';
+  const D0=335, D1=1217, EMPTY='#E8E1CD';
   const P=11, BASE=600, BX=40, BW=240;
 
   let e='';
@@ -1087,7 +1090,7 @@ document.querySelectorAll('[data-img]').forEach(el=>{
   let d=D0, raf;
   function render(){
     fls.forEach((r,i)=>{const f=i+1;let c=null;for(let g=GROUPS.length-1;g>=0;g--)if(done(g,f,d)){c=GROUPS[g][1];break}r.setAttribute('fill',c||'transparent');r.setAttribute('stroke',c?'none':'#D3CAB2')});
-    cap.setAttribute('fill',d>=1078?'#1A322D':'transparent');cap.setAttribute('stroke',d>=1078?'none':'#D3CAB2');
+    cap.setAttribute('fill',d>=1038?'#1A322D':'transparent');cap.setAttribute('stroke',d>=1038?'none':'#D3CAB2');
     const tops=GROUPS.map((g,i)=>top(i,d));
     tops.forEach((t,i)=>vals[i].textContent=t);
     monthEl.textContent=Math.max(12,Math.round(d/30.42));
