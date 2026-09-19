@@ -1,0 +1,1175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brigade Neopolis · Execution Plan (v3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   KLC brand palette — sampled from the KLC company profile:
+   cream paper, deep navy panels, near-black type, and the
+   terracotta of KLC's branded site netting as the one accent.
+   ============================================================ */
+:root{
+  --paper:#F4EFE1; --paper-2:#E8E1CD; --ink:#1A322D; --ink-2:#213C36; --ink-3:#2C4A43;
+  --text:#15241F; --muted:#6B7470; --muted-d:#A9B8B0; --line:rgba(26,50,45,.14); --line-d:rgba(244,239,225,.14);
+  --accent:#8C6E43; --accent-d:#D9C79E; --accent-soft:#D9C79E;
+  --n1:#1A322D; --n2:#2F5249; --n3:#56766C; --n4:#8FA39A; --n5:#C3CEC6;
+  --ease:cubic-bezier(.22,1,.36,1); --ease-io:cubic-bezier(.77,0,.18,1);
+  --font:'Poppins',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0E1A17;overflow:hidden;font-family:var(--font);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus{outline:0}button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* ---------- Stage: authored at 1920×1080, scaled to fit ---------- */
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--paper);color:var(--text)}
+.slide{position:absolute;inset:0;visibility:hidden;overflow:hidden}
+.slide.dark{background:var(--ink);color:#F4EFE1}
+.slide.light{background:var(--paper)}
+.slide.active,.slide.leaving{visibility:visible}
+.slide.active{z-index:3}
+.slide.leaving{z-index:2;animation:leave 1s var(--ease-io) both}
+.slide.in-next{animation:wipeNext 1.05s var(--ease-io) both}
+.slide.in-prev{animation:wipePrev 1.05s var(--ease-io) both}
+.slide.in-next .pan{animation:panNext 1.3s var(--ease) both}
+.slide.in-prev .pan{animation:panPrev 1.3s var(--ease) both}
+@keyframes wipeNext{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0 0 0 0)}}
+@keyframes wipePrev{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes panNext{from{transform:translateX(140px)}to{transform:none}}
+@keyframes panPrev{from{transform:translateX(-140px)}to{transform:none}}
+@keyframes leave{to{transform:scale(.95);filter:brightness(.6)}}
+.pan{position:absolute;inset:0}
+
+/* ---------- Reveal system ---------- */
+.rv{opacity:0;transform:translateY(34px);transition:opacity .9s var(--ease),transform 1.1s var(--ease);transition-delay:calc(var(--d,0) * 1ms + 450ms)}
+.rv.s{transform:scale(.94)} .rv.f{transform:none}
+.active .rv,.leaving .rv{opacity:1;transform:none}
+.mask{display:block;overflow:hidden;padding-bottom:.06em}
+.mask>span{display:block;transform:translateY(110%);transition:transform 1.2s var(--ease);transition-delay:calc(var(--d,0) * 1ms + 450ms)}
+.active .mask>span,.leaving .mask>span{transform:none}
+.slide:not(.active):not(.leaving) :is(.rv,.mask>span){transition:none!important}
+
+/* ---------- Type ---------- */
+/* section label — the profile's "UPPERCASE TITLE ———" device, kept small */
+.label{position:absolute;left:120px;right:120px;top:128px;display:flex;align-items:center;gap:26px;font-size:17px;font-weight:600;letter-spacing:.24em;text-transform:uppercase}
+.label b{font-weight:600;color:var(--accent)}
+.dark .label b{color:var(--accent-d)}
+.label::after{content:"";flex:1;height:1.5px;background:currentColor;opacity:.8;transform-origin:left;transform:scaleX(0);transition:transform 1.4s var(--ease) .8s}
+.active .label::after,.leaving .label::after{transform:scaleX(1)}
+/* the one sentence the presenter says on this slide */
+.title{position:absolute;left:120px;top:176px;max-width:1500px;font-size:66px;line-height:1.1;font-weight:600;letter-spacing:-.015em}
+.title em{font-style:normal;color:var(--accent)}
+.dark .title em{color:var(--accent-d)}
+.small{font-size:19px;line-height:1.55;color:var(--muted)}
+.dark .small{color:var(--muted-d)}
+
+/* ---------- Image slots ---------- */
+.img{position:relative;overflow:hidden;background-color:var(--ink-3);background-image:var(--img);background-size:cover;background-position:center}
+.img.empty{background-image:repeating-linear-gradient(135deg,rgba(140,110,67,.10) 0 2px,transparent 2px 22px);background-color:var(--paper-2);outline:2px dashed rgba(140,110,67,.5);outline-offset:-14px}
+.img.empty.on-dark{background-color:var(--ink-2)}
+.img .ph{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:40px;color:var(--accent-d);font-size:18px;font-weight:500}
+.img .ph small{font-size:14px;color:var(--muted-d);font-weight:400}
+.img.empty .ph{display:flex}
+.img.drag{outline:3px solid var(--accent);outline-offset:-10px}
+.kb{position:absolute;inset:0}
+.active .kb{animation:kb 18s ease-out both}
+@keyframes kb{from{transform:scale(1.12)}to{transform:scale(1)}}
+
+/* ---------- Chrome ---------- */
+.chrome{position:absolute;inset:0;z-index:20;pointer-events:none;color:var(--text);transition:color .6s}
+.stage[data-theme=dark] .chrome{color:#F4EFE1}
+.chrome .logo{position:absolute;left:120px;top:40px;height:44px;transition:opacity .6s}
+.chrome .logo.l{opacity:0}
+.stage[data-theme=dark] .chrome .logo.l{opacity:1}
+.stage[data-theme=dark] .chrome .logo.d{opacity:0}
+.chrome .tag{position:absolute;right:120px;top:56px;font-size:13px;letter-spacing:.24em;font-weight:500;opacity:.6}
+.chrome .foot{position:absolute;left:120px;right:120px;bottom:34px;height:50px;display:flex;align-items:center;gap:28px;pointer-events:auto}
+.chrome .count{font-size:15px;letter-spacing:.12em;font-weight:500;min-width:88px;opacity:.8}
+.chrome .count b{font-weight:700}
+.chrome .bar-wrap{flex:1;position:relative;height:4px;display:flex;align-items:center}
+.chrome .bar{position:absolute;left:0;right:0;height:1px;background:currentColor;opacity:.2}
+.chrome .bar-fill{position:absolute;left:0;right:0;top:0;height:3px;background:var(--accent);transform-origin:left;transform:scaleX(0);transition:transform .9s var(--ease-io)}
+.stage[data-theme=dark] .chrome .bar-fill{background:var(--accent-d)}
+.chrome .now{font-size:13px;letter-spacing:.2em;text-transform:uppercase;opacity:.6;min-width:260px;text-align:right}
+.chrome .btns{display:flex;gap:10px}
+.cb{width:50px;height:50px;border-radius:50%;border:1.5px solid currentColor;display:grid;place-items:center;opacity:.75;transition:opacity .3s,background .3s,color .3s,border-color .3s}
+.cb:hover{opacity:1;background:var(--ink);border-color:var(--ink);color:#F4EFE1}
+.dark .cb:hover,.stage[data-theme=dark] .chrome .cb:hover{background:#F4EFE1;border-color:#F4EFE1;color:var(--ink)}
+.cb svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cb.on{background:var(--accent);border-color:var(--accent);color:#F4EFE1;opacity:1}
+
+/* contents drawer */
+.drawer{position:absolute;inset:0;z-index:40;background:rgba(14,26,23,.6);opacity:0;pointer-events:none;transition:opacity .5s}
+.drawer.open{opacity:1;pointer-events:auto}
+.drawer .panel{position:absolute;right:0;top:0;bottom:0;width:620px;background:var(--ink);color:#F4EFE1;padding:100px 70px;transform:translateX(100%);transition:transform .7s var(--ease)}
+.drawer.open .panel{transform:none}
+.drawer h5{font-size:15px;letter-spacing:.24em;font-weight:600;color:var(--accent-d)}
+.drawer ol{list-style:none;margin-top:36px}
+.drawer li button{width:100%;text-align:left;display:flex;gap:26px;padding:14px 0;border-bottom:1px solid var(--line-d);font-size:21px;color:#D6DDD6;transition:color .3s,transform .4s var(--ease)}
+.drawer li button span{color:var(--accent-d);font-weight:600;width:36px}
+.drawer li button:hover,.drawer li.cur button{color:#F4EFE1;transform:translateX(12px)}
+
+/* presenter notes (N) */
+.icon{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* ============ 1 COVER ============ */
+#s-cover .img{position:absolute;inset:0}
+#s-cover .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(26,50,45,.97) 0%,rgba(26,50,45,.88) 40%,rgba(26,50,45,.3) 72%,rgba(26,50,45,.6) 100%),linear-gradient(0deg,rgba(26,50,45,.85),transparent 40%)}
+#s-cover .content{position:absolute;left:120px;top:250px;width:1000px}
+#s-cover .kicker{font-size:18px;letter-spacing:.3em;font-weight:500;color:var(--accent-d)}
+#s-cover .big{font-size:150px;line-height:.92;font-weight:800;letter-spacing:-.01em;margin-top:30px}
+#s-cover .big .o{-webkit-text-stroke:2px #F4EFE1;color:transparent}
+#s-cover .pillars{margin-top:46px;display:flex;font-size:24px;color:#E4E8E1}
+#s-cover .pillars span+span::before{content:"·";margin:0 20px;color:var(--accent-d)}
+#s-cover .meta{position:absolute;left:120px;bottom:150px;display:flex;gap:64px;align-items:flex-end}
+#s-cover .meta .n{font-size:88px;font-weight:700;line-height:1}
+#s-cover .meta .n small{font-size:26px;font-weight:500;margin-left:10px;color:var(--accent-d)}
+#s-cover .meta .k{font-size:14px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted-d);margin-top:12px}
+#s-cover .meta .sep{width:1px;height:110px;background:var(--line-d)}
+#s-cover .meta .who{font-size:19px;line-height:1.6;color:#D6DDD6}
+#s-cover .meta .who b{display:block;color:#F4EFE1;font-weight:600;letter-spacing:.14em}
+#s-cover .towerCard{position:absolute;right:120px;top:130px;bottom:130px;width:470px;border-radius:4px;overflow:hidden;box-shadow:0 60px 120px rgba(0,0,0,.5);transform:translateY(120%);transition:transform 1.8s var(--ease) .5s}
+#s-cover.active .towerCard,#s-cover.leaving .towerCard{transform:none}
+#s-cover .towerCard .img{position:absolute;inset:0}
+#s-cover .towerCard .cap{position:absolute;left:0;right:0;bottom:0;padding:26px 30px;background:linear-gradient(0deg,rgba(26,50,45,.9),transparent);font-size:13px;letter-spacing:.24em;color:#F4EFE1}
+
+/* ============ 2 ABOUT ============ */
+#s-klc .title{max-width:900px}
+#s-klc .stats{position:absolute;left:120px;top:520px;width:880px;display:grid;grid-template-columns:1fr 1fr;gap:0 70px}
+#s-klc .stat{padding:34px 0 30px;border-top:1px solid var(--line)}
+#s-klc .stat .n{font-size:76px;font-weight:700;line-height:1;letter-spacing:-.02em;white-space:nowrap}
+#s-klc .stat .n small{font-size:24px;font-weight:600;color:var(--accent);margin-left:8px;letter-spacing:0}
+#s-klc .stat .k{font-size:19px;color:var(--muted);margin-top:12px}
+#s-klc .photo{position:absolute;right:0;top:0;bottom:0;width:740px}
+#s-klc .photo .img{position:absolute;inset:0}
+
+/* ============ 3 GLANCE ============ */
+#s-glance .months{position:absolute;left:120px;top:420px;width:1680px}
+#s-glance .scale{position:relative;height:150px}
+#s-glance .seg{position:absolute;bottom:0;height:34px;transform-origin:left;transform:scaleX(0);transition:transform 1.6s var(--ease-io)}
+#s-glance .seg.a{left:0;width:87.5%;background:var(--ink);transition-delay:1s}
+#s-glance .seg.b{left:87.5%;width:12.5%;background:var(--accent);transition-delay:2.4s}
+#s-glance.active .seg{transform:none}
+#s-glance .seglbl{position:absolute;bottom:56px;opacity:0;transition:opacity .8s}
+#s-glance .seglbl.a{left:0;transition-delay:1.9s}
+#s-glance .seglbl.b{left:87.5%;padding-left:20px;transition-delay:3s}
+#s-glance.active .seglbl{opacity:1}
+#s-glance .seglbl .n{font-size:72px;font-weight:700;line-height:1}
+#s-glance .seglbl .n small{font-size:24px;font-weight:500;margin-left:8px}
+#s-glance .seglbl.b .n{color:var(--accent)}
+#s-glance .seglbl .k{font-size:17px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+#s-glance .ticks{display:flex;justify-content:space-between;margin-top:14px;font-size:14px;color:var(--muted)}
+#s-glance .three{position:absolute;left:120px;right:120px;bottom:170px;display:grid;grid-template-columns:repeat(3,1fr);gap:70px}
+#s-glance .three>div{border-top:1.5px solid var(--ink);padding-top:22px}
+#s-glance .three h4{font-size:26px;font-weight:600}
+#s-glance .three p{font-size:20px;color:var(--muted);margin-top:8px;line-height:1.5}
+#s-glance .three p b{color:var(--text);font-weight:600}
+
+/* ============ 4 PHILOSOPHY ============ */
+#s-phil .bg{position:absolute;right:0;top:0;width:900px;height:100%;opacity:.22}
+#s-phil .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--ink),transparent 60%),linear-gradient(0deg,var(--ink),transparent 50%)}
+#s-phil .flow{position:absolute;left:120px;right:120px;top:500px;height:400px}
+#s-phil .wire{position:absolute;left:0;right:0;top:36px;height:1.5px;background:var(--line-d)}
+#s-phil .wire i{position:absolute;inset:0;background:var(--accent-d);transform-origin:left;transform:scaleX(0);transition:transform 2.6s var(--ease-io) .9s}
+#s-phil.active .wire i{transform:scaleX(1)}
+#s-phil .steps{position:absolute;inset:0;display:grid;grid-template-columns:repeat(5,1fr);gap:40px}
+#s-phil .node{width:72px;height:72px;border-radius:50%;border:1.5px solid var(--accent-d);background:var(--ink);display:grid;place-items:center;font-size:20px;font-weight:600;color:var(--accent-d)}
+#s-phil .step h3{font-size:38px;font-weight:700;letter-spacing:.06em;margin-top:40px}
+#s-phil .step p{font-size:22px;line-height:1.45;color:#D6DDD6;margin-top:12px}
+
+/* ============ 5 PROGRAMME ============ */
+#s-prog .gantt{position:absolute;left:120px;right:120px;top:380px;height:470px}
+#s-prog .axis{position:absolute;left:340px;right:0;top:0;height:30px}
+#s-prog .axis span{position:absolute;transform:translateX(-50%);font-size:14px;color:var(--muted);font-weight:500}
+#s-prog .axlbl{position:absolute;left:0;top:0;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+#s-prog .grid{position:absolute;left:340px;right:0;top:40px;bottom:40px}
+#s-prog .grid i{position:absolute;top:0;bottom:0;width:1px;background:var(--line);opacity:.6}
+#s-prog .row{position:absolute;left:0;right:0;height:60px;display:flex;align-items:center}
+#s-prog .row .name{width:340px;font-size:21px;font-weight:500;padding-right:30px}
+#s-prog .row .lane{position:absolute;left:340px;right:0;top:10px;height:40px}
+#s-prog .row .b{position:absolute;top:0;height:40px;border-radius:2px;width:0;display:flex;align-items:center;padding:0 14px;font-size:15px;font-weight:600;color:#F4EFE1;white-space:nowrap;overflow:hidden}
+#s-prog .head-cursor{position:absolute;top:30px;bottom:30px;width:2px;background:var(--accent);left:340px;opacity:0;pointer-events:none}
+#s-prog .head-cursor b{position:absolute;top:-30px;left:50%;transform:translateX(-50%);background:var(--accent);color:#F4EFE1;font-size:13px;font-weight:600;padding:4px 10px;border-radius:2px;white-space:nowrap}
+#s-prog .note{position:absolute;opacity:0;transition:opacity .8s var(--ease)}
+#s-prog .note.on{opacity:1}
+#s-prog .note .t{font-size:19px;font-weight:600;color:var(--accent)}
+#s-prog .note .s{font-size:17px;color:var(--muted);margin-top:2px}
+#s-prog .overlap{position:absolute;top:30px;bottom:30px;background:repeating-linear-gradient(135deg,rgba(140,110,67,.14) 0 2px,transparent 2px 10px);border-left:1.5px dashed var(--accent);border-right:1.5px dashed var(--accent);opacity:0;transition:opacity .8s}
+#s-prog .overlap.on{opacity:1}
+
+/* ============ 6 TOWER — OPTION 2: five phases ============ */
+#s-tower{background:var(--ink)}
+#s-tower .left{position:absolute;left:120px;top:186px;width:660px}
+#s-tower .left .t{font-size:56px;line-height:1.08;font-weight:600;letter-spacing:-.015em}
+#s-tower .phases{margin-top:46px;border-top:1px solid var(--line-d)}
+#s-tower .ph{width:100%;display:grid;grid-template-columns:34px 1fr auto;gap:20px;align-items:center;text-align:left;padding:15px 0;border-bottom:1px solid var(--line-d);color:#7F948B;transition:color .45s}
+#s-tower .ph .k{font-size:13px;letter-spacing:.2em;font-weight:600}
+#s-tower .ph .n{font-size:25px;font-weight:600}
+#s-tower .ph .d{font-size:16px;white-space:nowrap}
+#s-tower .ph .x{grid-column:2/4;font-size:17px;color:var(--muted-d);margin-top:2px;max-height:0;opacity:0;overflow:hidden;transition:max-height .5s var(--ease),opacity .4s}
+#s-tower .ph.done{color:#A9B8B0}
+#s-tower .ph.cur{color:#F4EFE1}
+#s-tower .ph.cur .k{color:var(--accent-d)}
+#s-tower .ph.cur .x{max-height:40px;opacity:1}
+#s-tower .ph:hover{color:#F4EFE1}
+#s-tower .meters{display:flex;gap:60px;margin-top:38px;align-items:flex-end}
+#s-tower .meters .n{font-size:58px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+#s-tower .meters .n small{font-size:19px;font-weight:500;color:var(--muted-d);margin-left:7px}
+#s-tower .meters .k{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted-d);margin-top:8px}
+#s-tower .meters .ctrl{margin-left:auto;display:flex;gap:10px}
+#s-tower .cb{width:46px;height:46px}
+#s-tower .film{position:absolute;right:120px;top:196px;width:920px}
+#s-tower .film .frame{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--ink-2)}
+#s-tower .film video{width:100%;height:100%;object-fit:cover;display:block}
+#s-tower .film .bigplay{position:absolute;left:50%;top:50%;width:92px;height:92px;margin:-46px 0 0 -46px;border-radius:50%;border:1.5px solid rgba(244,239,225,.7);background:rgba(26,50,45,.45);display:none;place-items:center;z-index:2;transition:background .3s,transform .3s var(--ease)}
+#s-tower .film .bigplay svg{width:32px;height:32px;fill:#F4EFE1;margin-left:4px}
+#s-tower .film .bigplay:hover{background:rgba(26,50,45,.75);transform:scale(1.06)}
+#s-tower .film.waiting .bigplay{display:grid}
+#s-tower .film .vig{position:absolute;inset:0;background:linear-gradient(0deg,rgba(26,50,45,.92) 0%,rgba(26,50,45,.5) 26%,transparent 52%);pointer-events:none}
+#s-tower .film .cap{position:absolute;left:34px;bottom:28px;right:34px;display:flex;align-items:flex-end;justify-content:space-between;gap:26px;pointer-events:none}
+#s-tower .film .cap .nm{font-size:34px;font-weight:600}
+#s-tower .film .cap .ds{font-size:18px;color:#D6DDD6;margin-top:4px}
+#s-tower .film .cap .mo{font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-d);white-space:nowrap}
+#s-tower .film .cap.swap>*{animation:swapSoft .45s var(--ease) both}
+#s-tower .film .track{margin-top:22px;height:2px;background:var(--line-d);position:relative}
+#s-tower .film .track i{position:absolute;left:0;top:-1px;height:4px;background:var(--accent-d);width:100%;transform-origin:left;transform:scaleX(0)}
+#s-tower .film .ticks{position:relative;height:26px;margin-top:12px}
+#s-tower .film .ticks span{position:absolute;top:0;transform:translateX(-50%);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-d);cursor:pointer;transition:color .4s}
+#s-tower .film .ticks span.on{color:var(--accent-d)}
+
+/* ============ 7 CYCLE ============ */
+#s-cycle .dial{position:absolute;left:130px;top:330px;width:620px;height:620px}
+#s-cycle .dial svg{width:100%;height:100%;overflow:visible}
+#s-cycle .seg{fill:none;stroke-width:74;transition:opacity .5s,stroke-width .5s var(--ease);cursor:pointer}
+#s-cycle .seg.dim{opacity:.22}
+#s-cycle .seg.hi{stroke-width:92}
+#s-cycle .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+#s-cycle .center .d{font-size:16px;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);font-weight:600}
+#s-cycle .center .t{font-size:44px;font-weight:700;margin-top:8px;line-height:1.1}
+#s-cycle .center.swap>*{animation:swapSoft .4s var(--ease) both}
+#s-cycle .daynum{font-size:17px;font-weight:600;fill:var(--muted)}
+#s-cycle .acts{position:absolute;left:900px;right:120px;top:330px;border-top:1.5px solid var(--ink)}
+#s-cycle .act{width:100%;display:grid;grid-template-columns:130px 1fr;gap:20px;align-items:center;padding:10px 18px;text-align:left;border-bottom:1px solid var(--line);transition:background .35s,color .35s}
+#s-cycle .act .dd{font-size:14px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+#s-cycle .act b{font-size:21px;font-weight:600;display:block}
+#s-cycle .act span{font-size:15px;color:var(--muted);display:block;margin-top:2px}
+#s-cycle .act.on{background:var(--ink);color:#F4EFE1}
+#s-cycle .act.on span{color:var(--muted-d)}
+#s-cycle .act.on .dd{color:var(--accent-d)}
+#s-cycle .hint{position:absolute;left:918px;bottom:150px;font-size:15px;color:var(--muted)}
+
+/* ============ 8 LOGISTICS ============ */
+#s-logi .title{max-width:900px}
+#s-logi .items{position:absolute;left:120px;top:470px;width:880px;display:grid;grid-template-columns:1fr 1fr;gap:34px 60px}
+#s-logi .it{display:grid;grid-template-columns:42px 1fr;gap:20px;border-top:1px solid var(--line);padding-top:20px}
+#s-logi .it svg{width:34px;height:34px;color:var(--accent)}
+#s-logi .it h4{font-size:22px;font-weight:600}
+#s-logi .it p{font-size:18px;color:var(--muted);line-height:1.45;margin-top:4px}
+#s-logi .site{position:absolute;right:120px;top:130px;width:740px;height:820px;border-radius:3px;background:var(--ink)}
+#s-logi .site .plan{position:absolute;inset:0}
+#s-logi .site svg.ov{position:absolute;inset:0;width:100%;height:100%}
+#s-logi .jib{transform-origin:370px 380px;animation:jib 16s linear infinite}
+@keyframes jib{to{transform:rotate(360deg)}}
+#s-logi .hs{position:absolute;transform:translate(-50%,-50%);cursor:pointer}
+#s-logi .hs .dot{width:40px;height:40px;border-radius:50%;background:var(--accent-d);color:var(--ink);font-weight:700;font-size:14px;display:grid;place-items:center;border:3px solid var(--ink);transition:transform .35s var(--ease)}
+#s-logi .hs:hover .dot{transform:scale(1.15)}
+#s-logi .hs .lab{position:absolute;left:50%;top:50px;transform:translateX(-50%);background:#F4EFE1;color:var(--ink);padding:9px 14px;border-radius:2px;font-size:14px;font-weight:600;white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none}
+#s-logi .hs:hover .lab{opacity:1}
+#s-logi .site .note{position:absolute;left:24px;bottom:22px;font-size:13px;color:#F4EFE1;background:rgba(26,50,45,.75);padding:8px 14px;border-radius:2px}
+
+/* ============ 9 MACHINERY ============ */
+#s-mach .bg{position:absolute;inset:0;opacity:.14}
+#s-mach .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--ink) 10%,rgba(26,50,45,.6) 50%,var(--ink) 95%)}
+#s-mach .table{position:absolute;left:120px;right:120px;top:350px}
+#s-mach .tr{display:grid;grid-template-columns:60px 480px 320px 1fr;align-items:center;gap:30px;padding:8px 0;border-bottom:1px solid var(--line-d)}
+#s-mach .tr .ic{color:var(--accent-d)}
+#s-mach .tr .ic svg{width:30px;height:30px}
+#s-mach .tr .nm{font-size:23px;font-weight:600}
+#s-mach .units{display:flex;gap:8px;align-items:center}
+#s-mach .units i{width:40px;height:20px;border-radius:1px;background:var(--accent-d);transform:scaleY(0);transform-origin:bottom;transition:transform .6s var(--ease)}
+#s-mach .units i.on{transform:none}
+#s-mach .units b{font-size:28px;font-weight:700;margin-left:14px}
+#s-mach .pp{font-size:19px;color:#D6DDD6}
+
+/* ============ 10 FINISHING ============ */
+#s-fin .elev{position:absolute;left:200px;top:330px;width:520px;height:650px}
+#s-fin .elev svg{width:100%;height:100%;overflow:visible}
+#s-fin .elev .lbl{font-size:15px;font-weight:600;fill:var(--text)}
+#s-fin .elev .lbl tspan{fill:var(--accent)}
+#s-fin .side{position:absolute;left:960px;right:120px;top:350px}
+#s-fin .side .mo{display:flex;align-items:baseline;gap:18px}
+#s-fin .side .mo b{font-size:96px;font-weight:700;line-height:.9;font-variant-numeric:tabular-nums}
+#s-fin .side .mo span{font-size:18px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+#s-fin .legend{margin-top:40px;border-top:1.5px solid var(--ink)}
+#s-fin .lg{display:grid;grid-template-columns:34px 1fr auto;gap:22px;align-items:center;padding:17px 0;border-bottom:1px solid var(--line)}
+#s-fin .lg i{width:34px;height:22px;background:var(--c)}
+#s-fin .lg span{font-size:23px;font-weight:500}
+#s-fin .lg b{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;min-width:90px;text-align:right}
+#s-fin .lg b small{font-size:16px;font-weight:500;color:var(--muted);margin-right:4px}
+#s-fin .foot{display:flex;align-items:center;gap:18px;margin-top:28px;font-size:18px;color:var(--muted)}
+#s-fin #f-replay{width:44px;height:44px;flex:none}
+#s-fin #f-replay svg{width:18px;height:18px}
+
+/* ============ 11 ORG ============ */
+#s-org .chart{position:absolute;left:120px;right:120px;top:360px;height:600px}
+#s-org .cols{position:absolute;left:0;right:0;top:0;height:470px;display:grid;grid-template-columns:repeat(8,1fr);gap:40px;align-items:end;border-bottom:1.5px solid var(--ink)}
+#s-org .col{position:relative;height:100%;display:flex;flex-direction:column;justify-content:flex-end}
+#s-org .col .bar{height:0;background:var(--ink);transition:height 1.4s var(--ease)}
+#s-org .col.ctl .bar{background:var(--n4)}
+#s-org .col.top .bar{background:var(--accent)}
+#s-org .col .v{font-size:44px;font-weight:700;text-align:center;margin-bottom:10px}
+#s-org .col.top .v{color:var(--accent)}
+#s-org .names{position:absolute;left:0;right:0;top:486px;display:grid;grid-template-columns:repeat(8,1fr);gap:40px;font-size:18px;font-weight:500;text-align:center;line-height:1.3}
+#s-org .groups{position:absolute;left:0;right:0;top:556px;display:grid;grid-template-columns:repeat(8,1fr);gap:40px}
+#s-org .groups div{border-top:2px solid var(--c);padding-top:10px;font-size:15px;color:var(--muted);text-align:center}
+#s-org .groups b{color:var(--text);font-weight:600}
+
+/* ============ 12 CONTROLS ============ */
+#s-ctrl .bg{position:absolute;right:0;top:0;width:1100px;height:560px;opacity:.2}
+#s-ctrl .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--ink),transparent 70%),linear-gradient(0deg,var(--ink),transparent 70%)}
+#s-ctrl .cols{position:absolute;left:120px;right:120px;top:440px;display:grid;grid-template-columns:repeat(3,1fr);gap:70px}
+#s-ctrl .cad{border-top:1.5px solid rgba(244,239,225,.6);padding-top:24px}
+#s-ctrl .cad .top{display:flex;align-items:center;gap:20px}
+#s-ctrl .cad .ring{width:62px;height:62px;flex:none;overflow:visible}
+#s-ctrl .cad .ring [stroke]{stroke-linecap:round;stroke-linejoin:round}
+/* daily — hand sweeps the dial once a "day" */
+#s-ctrl.active .ic-hand{transform-origin:31px 31px;animation:sweep 4s linear 1.1s infinite}
+@keyframes sweep{to{transform:rotate(360deg)}}
+#s-ctrl.active .ic-dial{stroke-dasharray:151;stroke-dashoffset:151;animation:drawIn 1.4s var(--ease) .9s forwards}
+@keyframes drawIn{to{stroke-dashoffset:0}}
+/* weekly — seven marks fill one after another, then repeat */
+#s-ctrl.active .ic-day{opacity:.25;animation:wk 5.6s linear 1.1s infinite}
+@keyframes wk{0%,92%{opacity:.25}4%,88%{opacity:1}}
+/* monthly — the S-curve draws itself */
+#s-ctrl.active .ic-curve{stroke-dasharray:96;stroke-dashoffset:96;animation:curve 5s var(--ease) 1.1s infinite}
+@keyframes curve{0%{stroke-dashoffset:96}55%,88%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}
+#s-ctrl.active .ic-dot{opacity:0;animation:dotIn 5s var(--ease) 1.1s infinite}
+@keyframes dotIn{0%,50%{opacity:0;transform:none}62%,88%{opacity:1}100%{opacity:0}}
+#s-ctrl .cad h4{font-size:30px;font-weight:600}
+#s-ctrl .cad ul{list-style:none;margin-top:18px}
+#s-ctrl .cad li{font-size:22px;padding:10px 0;color:#E4E8E1}
+#s-ctrl .qh{position:absolute;left:120px;right:120px;top:760px;display:grid;grid-template-columns:1fr 1fr;gap:70px}
+#s-ctrl .qh div{display:flex;gap:18px;align-items:baseline;font-size:19px;color:#D6DDD6;border-top:1px solid var(--line-d);padding-top:18px}
+#s-ctrl .qh b{font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-d);white-space:nowrap;font-weight:600}
+
+/* ============ QUALITY & SAFETY ============ */
+#s-qs .title{font-size:60px}
+#s-qs .col-h{font-size:14px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;color:var(--accent);display:flex;gap:14px;align-items:center}
+#s-qs .col-h::after{content:"";width:40px;height:1.5px;background:currentColor}
+/* quality: hold-point gates */
+#s-qs .q{position:absolute;left:120px;top:400px;width:760px}
+#s-qs .gates{position:relative;margin-top:30px}
+#s-qs .spine{position:absolute;left:21px;top:22px;width:2px;height:376px;background:var(--line)}
+#s-qs .spine i{position:absolute;inset:0;background:var(--accent);transform-origin:top;transform:scaleY(var(--p,0));transition:transform .7s var(--ease)}
+#s-qs .gate{position:relative;display:grid;grid-template-columns:44px 1fr auto;gap:26px;align-items:center;height:94px}
+#s-qs .gate .c{width:44px;height:44px;border-radius:50%;border:2px solid var(--n5);background:var(--paper);display:grid;place-items:center;font-size:15px;font-weight:600;color:var(--muted);transition:background .4s,border-color .4s,color .4s,transform .5s var(--ease)}
+#s-qs .gate .c svg{width:20px;height:20px;display:none}
+#s-qs .gate.ok .c{background:var(--accent);border-color:var(--accent);color:#F4EFE1;transform:scale(1.08)}
+#s-qs .gate.ok .c span{display:none}
+#s-qs .gate.ok .c svg{display:block}
+#s-qs .gate.ok .c svg path{animation:tick .45s var(--ease) both}
+@keyframes tick{from{stroke-dashoffset:24}to{stroke-dashoffset:0}}
+#s-qs .gate b{font-size:25px;font-weight:600;display:block;transition:color .4s}
+#s-qs .gate small{font-size:17px;color:var(--muted)}
+#s-qs .gate em{font-style:normal;font-size:13px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:var(--n4);transition:color .4s}
+#s-qs .gate.ok em{color:var(--accent)}
+#s-qs .gate:not(.ok) b{color:var(--n4)}
+#s-qs .release{margin-top:14px;margin-left:70px;height:58px;position:relative;overflow:hidden;border:1.5px solid var(--ink);display:flex;align-items:center;padding:0 24px;font-size:15px;letter-spacing:.24em;font-weight:600}
+#s-qs .release i{position:absolute;inset:0;background:var(--ink);transform-origin:left;transform:scaleX(0);transition:transform .8s var(--ease-io)}
+#s-qs .release span{position:relative;transition:color .3s .3s}
+#s-qs .release.on i{transform:none}
+#s-qs .release.on span{color:#F4EFE1}
+/* safety: live floor section */
+#s-qs .s{position:absolute;left:980px;right:120px;top:380px;bottom:120px;background:var(--ink);color:#F4EFE1;padding:36px 44px}
+#s-qs .s .col-h{color:var(--accent-d)}
+#s-qs .s svg{position:absolute;left:44px;right:44px;top:96px;width:calc(100% - 88px);height:calc(100% - 130px);overflow:visible}
+#s-qs .ring{fill:none;stroke:rgba(244,239,225,.28);stroke-width:1.5;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke .6s,stroke-width .6s}
+#s-qs.active .ring{animation:ringIn 1.4s var(--ease) forwards;animation-delay:var(--dl)}
+@keyframes ringIn{to{stroke-dashoffset:0}}
+#s-qs .ring.on{stroke:#D9C79E;stroke-width:2.5}
+#s-qs .lead{fill:none;stroke:rgba(244,239,225,.22);stroke-width:1;transition:stroke .6s}
+#s-qs .lead.on{stroke:#D9C79E}
+#s-qs .knot{fill:#1A322D;stroke:rgba(244,239,225,.5);stroke-width:1.5;transition:fill .6s,stroke .6s}
+#s-qs .knot.on{fill:#D9C79E;stroke:#D9C79E}
+#s-qs .lay{opacity:0}
+#s-qs.active .lay{animation:layIn .8s var(--ease) forwards;animation-delay:var(--dl)}
+@keyframes layIn{from{opacity:0}to{opacity:1}}
+#s-qs .lay text{font-family:var(--font)}
+#s-qs .lay .n{font-size:13px;font-weight:600;letter-spacing:.2em;fill:#8FA39A;transition:fill .6s}
+#s-qs .lay .t{font-size:22px;font-weight:600;fill:rgba(244,239,225,.55);transition:fill .6s}
+#s-qs .lay .u{font-size:15px;fill:#8FA39A}
+#s-qs .lay.on .t{fill:#F4EFE1}
+#s-qs .lay.on .n{fill:#D9C79E}
+#s-qs .core text{font-family:var(--font);text-anchor:middle}
+#s-qs .core .a{font-size:14px;letter-spacing:.24em;font-weight:600;fill:#D9C79E}
+#s-qs .core .b{font-size:20px;font-weight:500;fill:#F4EFE1}
+
+/* ============ 13 MILESTONES ============ */
+#s-mile .tl{position:absolute;left:120px;right:120px;top:640px;height:1.5px;background:var(--line)}
+#s-mile .tl i{position:absolute;inset:0;background:var(--ink);transform-origin:left;transform:scaleX(0);transition:transform 3s var(--ease-io) .8s}
+#s-mile.active .tl i{transform:scaleX(1)}
+#s-mile .ms{position:absolute;top:640px;width:210px;transform:translateX(-50%)}
+#s-mile .ms .dot{position:absolute;left:50%;top:0;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:var(--paper);border:3px solid var(--ink);transform:scale(0);transition:transform .7s var(--ease)}
+#s-mile.active .ms .dot{transform:scale(1)}
+#s-mile .ms .body{position:absolute;left:0;right:0;text-align:center;opacity:0;transition:opacity .7s var(--ease),transform .9s var(--ease)}
+#s-mile .ms.up .body{bottom:36px;transform:translateY(30px)}
+#s-mile .ms.down .body{top:36px;transform:translateY(-30px)}
+#s-mile.active .ms .body{opacity:1;transform:none}
+#s-mile .ms .v{font-size:46px;font-weight:700;line-height:1}
+#s-mile .ms .v small{font-size:17px;font-weight:600;color:var(--accent);margin-left:5px}
+#s-mile .ms .t{font-size:20px;font-weight:500;margin-top:10px;color:var(--muted)}
+#s-mile .ms.last .dot{background:var(--accent);border-color:var(--accent);width:36px;height:36px;margin:-18px 0 0 -18px}
+#s-mile .ms.last .v{color:var(--accent)}
+
+/* ============ 14 CLOSING ============ */
+#s-end .img{position:absolute;right:0;top:0;bottom:0;width:1000px}
+#s-end .img::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--ink) 0%,rgba(26,50,45,.5) 45%,rgba(26,50,45,.1))}
+#s-end .content{position:absolute;left:120px;top:176px;width:1000px}
+#s-end .big{font-size:96px;line-height:.98;font-weight:700;letter-spacing:-.01em}
+#s-end .big .c{color:var(--accent-d)}
+#s-end ul{list-style:none;margin-top:50px}
+#s-end li{display:flex;gap:24px;align-items:center;font-size:30px;font-weight:500;padding:13px 0;border-bottom:1px solid var(--line-d)}
+#s-end li svg{width:34px;height:34px;flex:none}
+#s-end li svg path{stroke-dasharray:40;stroke-dashoffset:40;transition:stroke-dashoffset .7s var(--ease);transition-delay:calc(var(--d) * 1ms + 900ms)}
+#s-end.active li svg path{stroke-dashoffset:0}
+#s-end .contact{position:absolute;left:120px;right:120px;bottom:132px;display:flex;gap:70px;align-items:flex-end;font-size:18px;color:#D6DDD6;line-height:1.6}
+#s-end .contact b{display:block;color:#F4EFE1;font-weight:600;letter-spacing:.1em;font-size:14px}
+#s-end .contact .ty{margin-left:auto;font-size:15px;letter-spacing:.3em;color:var(--accent-d);text-transform:uppercase}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.2s!important;transition-delay:0s!important}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-crane" viewBox="0 0 32 32"><path d="M8 29V5M5 29h8M8 5h20M8 9l4-4M12 5v4M24 5v8M22 13h4v3h-4zM8 5 4 9h4M8 12l4-3M8 17l4-3M8 22l4-3"/></symbol>
+  <symbol id="i-hoist" viewBox="0 0 32 32"><path d="M9 3v26M23 3v26M9 29h14M12 12h8v9h-8zM16 3v9M5 29h22"/></symbol>
+  <symbol id="i-flow" viewBox="0 0 32 32"><path d="M3 10h14v12H3zM17 14h6l5 5v3H17zM7 25a2.5 2.5 0 1 0 0 .1M23 25a2.5 2.5 0 1 0 0 .1"/></symbol>
+  <symbol id="i-mixer" viewBox="0 0 32 32"><path d="M4 22h24M6 22l3-10h11l3 10M11 12l2-5h7l3 5M9 26a2.5 2.5 0 1 0 0 .1M23 26a2.5 2.5 0 1 0 0 .1M13 16l6 4"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 32 32"><path d="M4 4h24v24H4zM4 12h24M4 20h24M12 4v24M20 4v24"/></symbol>
+  <symbol id="i-gate" viewBox="0 0 32 32"><path d="M4 28V8M28 28V8M4 14h24M4 20h24M10 14v6M16 14v6M22 14v6M2 28h28"/></symbol>
+  <symbol id="i-link" viewBox="0 0 32 32"><path d="M13 19l6-6M10 14l-3 3a5 5 0 0 0 7 7l3-3M22 18l3-3a5 5 0 0 0-7-7l-3 3"/></symbol>
+  <symbol id="i-bar" viewBox="0 0 32 32"><path d="M4 22h24M8 22V10M8 10l4 4M8 10l-4 4M16 16l6-6M26 22V8"/></symbol>
+  <symbol id="i-bobcat" viewBox="0 0 32 32"><path d="M6 22h14V11h-6l-3 5H6zM20 16l6-5 3 2-5 7M9 26a3 3 0 1 0 0 .1M18 26a3 3 0 1 0 0 .1"/></symbol>
+  <symbol id="i-tractor" viewBox="0 0 32 32"><path d="M4 20V13h10l2-6h6v12M9 26a4 4 0 1 0 0 .1M24 26a3 3 0 1 0 0 .1M13 25h8"/></symbol>
+  <symbol id="i-pump" viewBox="0 0 32 32"><path d="M4 24h12v-8H4zM16 20h4l8-12M24 8h5M8 28a2 2 0 1 0 0 .1M14 28a2 2 0 1 0 0 .1"/></symbol>
+  <symbol id="i-pipe" viewBox="0 0 32 32"><path d="M3 12h10v8H3zM13 16h10a4 4 0 0 0 4-4V5M24 5h6"/></symbol>
+  <symbol id="i-power" viewBox="0 0 32 32"><path d="M4 9h24v16H4zM17 12l-4 6h6l-4 6M8 25v3M24 25v3"/></symbol>
+</svg>
+
+<div class="stage" id="stage" data-theme="dark">
+
+<!-- ================= 1 · COVER ================= -->
+<section class="slide dark" id="s-cover" data-title="Cover">
+  <div class="pan">
+    <div class="img on-dark" data-img="assets/cover.jpg"><div class="kb img" data-img="assets/cover.jpg" style="background-color:transparent"></div><div class="ph">Cover photograph<small>assets/cover.jpg · 1920×1080</small></div></div>
+    <div class="shade"></div>
+    <div class="content">
+      <div class="kicker rv">PROJECT EXECUTION PLAN</div>
+      <h1 class="big">
+        <span class="mask"><span style="--d:150">BRIGADE</span></span>
+        <span class="mask"><span style="--d:300" class="o">NEOPOLIS</span></span>
+      </h1>
+      <div class="pillars rv" style="--d:600"><span>Safe delivery</span><span>Controlled cycle</span><span>Rolling finishes</span></div>
+    </div>
+    <div class="meta">
+      <div class="rv" style="--d:800"><div class="n"><span data-count="40">0</span><small>months</small></div><div class="k">Baseline programme</div></div>
+      <div class="sep rv f" style="--d:900"></div>
+      <div class="who rv" style="--d:1000"><b>KLC CONSTRUCTIONS</b>Building high-rise since 1984</div>
+    </div>
+    <div class="towerCard">
+      <div class="img on-dark" data-img="assets/tower.jpg"><div class="ph">Project render<small>assets/tower.jpg</small></div></div>
+      <div class="cap">BRIGADE NEOPOLIS</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2 · ABOUT KLC ================= -->
+<section class="slide light" id="s-klc" data-title="About KLC">
+  <div class="pan">
+    <div class="label rv" style="right:860px"><span><b>01</b>&nbsp;&nbsp;About KLC</span></div>
+    <h2 class="title rv" style="--d:100">Four decades of building <em>high-rise</em>, since 1984.</h2>
+    <div class="stats">
+      <div class="stat rv" style="--d:400"><div class="n"><span data-count="45">0</span><small>M sq ft</small></div><div class="k">Delivered</div></div>
+      <div class="stat rv" style="--d:500"><div class="n"><span data-count="159">0</span><small>M sq ft</small></div><div class="k">In hand today</div></div>
+      <div class="stat rv" style="--d:600"><div class="n"><span data-count="25000" data-sep>0</span><small>+</small></div><div class="k">People on our sites</div></div>
+      <div class="stat rv" style="--d:700"><div class="n"><span data-count="250">0</span><small>+</small></div><div class="k">Tower cranes</div></div>
+    </div>
+    <div class="photo">
+      <div class="img rv f" data-img="assets/about-klc.jpg"><div class="ph">KLC site photograph<small>assets/about-klc.jpg · portrait</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3 · AT A GLANCE ================= -->
+<section class="slide light" id="s-glance" data-title="Project at a glance">
+  <div class="pan">
+    <div class="label rv"><span><b>02</b>&nbsp;&nbsp;Project at a glance</span></div>
+    <h2 class="title rv" style="--d:100">A <em>40-month</em> plan: build the structure, then close out finishes.</h2>
+    <div class="months">
+      <div class="scale">
+        <div class="seglbl a"><div class="n"><span data-count="35">0</span><small>months</small></div><div class="k">Structure</div></div>
+        <div class="seglbl b"><div class="n">5<small>months</small></div><div class="k">Finishing</div></div>
+        <div class="seg a"></div><div class="seg b"></div>
+      </div>
+      <div class="ticks rv f" style="--d:900"><span>Start</span><span>Month 10</span><span>Month 20</span><span>Month 30</span><span>Month 40 · Handover</span></div>
+    </div>
+    <div class="three">
+      <div class="rv" style="--d:1200"><h4>Structure</h4><p>Basement and podium, then a <b>steady floor cycle</b> up the tower.</p></div>
+      <div class="rv" style="--d:1300"><h4>Finishes</h4><p>Lower floors start <b>while the tower is still rising</b>.</p></div>
+      <div class="rv" style="--d:1400"><h4>Team</h4><p><b>72 staff</b>, controlling progress daily and weekly.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4 · PHILOSOPHY ================= -->
+<section class="slide dark" id="s-phil" data-title="How we work">
+  <div class="pan">
+    <div class="bg img on-dark" data-img="assets/philosophy.jpg"><div class="ph">Planning photo<small>assets/philosophy.jpg</small></div></div>
+    <div class="label rv"><span><b>03</b>&nbsp;&nbsp;How we work</span></div>
+    <h2 class="title rv" style="--d:100">We run the site like a <em>production line</em>.</h2>
+    <div class="flow">
+      <div class="wire"><i></i></div>
+      <div class="steps">
+        <div class="step rv" style="--d:700"><div class="node">01</div><h3>PLAN</h3><p>Weekly targets from the baseline</p></div>
+        <div class="step rv" style="--d:1150"><div class="node">02</div><h3>PREPARE</h3><p>Everything ready before a floor starts</p></div>
+        <div class="step rv" style="--d:1600"><div class="node">03</div><h3>PRODUCE</h3><p>The same cycle, measured every floor</p></div>
+        <div class="step rv" style="--d:2050"><div class="node">04</div><h3>FLOW</h3><p>Finishes follow on released floors</p></div>
+        <div class="step rv" style="--d:2500"><div class="node">05</div><h3>CONTROL</h3><p>Quality, safety and cost at every front</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5 · PROGRAMME ================= -->
+<section class="slide light" id="s-prog" data-title="Programme">
+  <div class="pan">
+    <div class="label rv"><span><b>04</b>&nbsp;&nbsp;Baseline programme</span></div>
+    <h2 class="title rv" style="--d:100">Five phases across <em>40 months</em>.</h2>
+    <div class="gantt rv f" style="--d:300">
+      <div class="axlbl">Month</div>
+      <div class="axis"></div>
+      <div class="grid"></div>
+            <div class="rows"></div>
+      <div class="head-cursor"><b>Month 0</b></div>
+      <div class="note" id="g-note"><div class="t">Finishing follows 3–4 floors below the structure</div><div class="s">Finishing activities will be completed 3–4 floors below the structural work front.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6 · STRUCTURE (TOWER RISE) ================= -->
+<section class="slide dark" id="s-tower" data-title="Structure, floor by floor">
+  <div class="pan">
+    <div class="label rv" style="right:1060px"><span><b>05</b>&nbsp;&nbsp;Structure</span></div>
+    <div class="left">
+      <h2 class="t rv" style="--d:100">From raft to roof,<br>one floor at a time.</h2>
+      <div class="phases rv" style="--d:300" id="t-phases"></div>
+      <div class="meters rv" style="--d:450">
+        <div><div class="n" id="t-day">0<small>days</small></div><div class="k">Elapsed</div></div>
+        <div><div class="n" id="t-floor">—</div><div class="k">Level</div></div>
+        <div class="ctrl">
+          <button class="cb" id="t-play" title="Play / pause"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+          <button class="cb" id="t-replay" title="Replay"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v5h5"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="film rv" style="--d:250">
+      <div class="frame">
+        <video id="t-vid" src="assets/build-timelapse.mp4" poster="assets/build-poster.jpg" muted autoplay playsinline preload="auto"></video>
+        <button class="bigplay" id="t-bigplay" aria-label="Play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+        <div class="vig"></div>
+        <div class="cap" id="t-cap"><div><div class="nm">Foundation &amp; basement</div><div class="ds">Raft, footings and two basement levels</div></div><div class="mo">Month 1–5</div></div>
+      </div>
+      <div class="track"><i id="t-prog"></i></div>
+      <div class="ticks" id="t-ticks"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 7 · FLOOR CYCLE ================= -->
+<section class="slide light" id="s-cycle" data-title="Floor cycle">
+  <div class="pan">
+    <div class="label rv"><span><b>06</b>&nbsp;&nbsp;Typical floor cycle</span></div>
+    <h2 class="title rv" style="--d:100">From the 5th floor up: <em>one floor every 11 days</em>.</h2>
+    <div class="dial rv s" style="--d:200">
+      <svg viewBox="-320 -320 640 640" id="c-svg"></svg>
+      <div class="center"><div class="d">Day 1–2</div><div class="t">Verticals</div></div>
+    </div>
+    <div class="acts" id="c-acts"></div>
+    <div class="hint rv" style="--d:1000">Target: zero avoidable hold before any pour. <span style="opacity:.6">Hover a step to hold it.</span></div>
+  </div>
+</section>
+
+<!-- ================= 8 · LOGISTICS ================= -->
+<section class="slide light" id="s-logi" data-title="Logistics">
+  <div class="pan">
+    <div class="label rv" style="right:900px"><span><b>07</b>&nbsp;&nbsp;Logistics</span></div>
+    <h2 class="title rv" style="--d:100">Nothing waits for <em>materials or lifting</em>.</h2>
+    <div class="items">
+      <div class="it rv" style="--d:300"><svg class="icon"><use href="#i-crane"/></svg><div><h4>Lifting</h4><p>Crane and hoists planned per work front</p></div></div>
+      <div class="it rv" style="--d:380"><svg class="icon"><use href="#i-flow"/></svg><div><h4>Materials</h4><p>Called off from the weekly look-ahead</p></div></div>
+      <div class="it rv" style="--d:460"><svg class="icon"><use href="#i-mixer"/></svg><div><h4>Concrete</h4><p>Pumps, RMC and backup for every pour</p></div></div>
+      <div class="it rv" style="--d:540"><svg class="icon"><use href="#i-grid"/></svg><div><h4>Formwork</h4><p>Enough sets to never pause the cycle</p></div></div>
+      <div class="it rv" style="--d:620"><svg class="icon"><use href="#i-gate"/></svg><div><h4>Access</h4><p>Separate routes for vehicles and people</p></div></div>
+      <div class="it rv" style="--d:700"><svg class="icon"><use href="#i-link"/></svg><div><h4>Interfaces</h4><p>Crane coverage study before we build</p></div></div>
+    </div>
+    <div class="site rv" style="--d:300">
+      <svg class="ov plan" viewBox="0 0 740 820">
+        <!-- generic site plan: replace with the project drawing when issued -->
+        <g stroke="rgba(244,239,225,.22)" fill="none" stroke-width="1.5">
+          <path d="M40 40h660v740H40z" stroke-dasharray="10 8"/>                 <!-- plot boundary -->
+          <path d="M40 690h660M40 706h660" stroke="rgba(244,239,225,.14)"/>       <!-- public road -->
+          <path d="M96 700h560" stroke="rgba(244,239,225,.10)" stroke-dasharray="18 16"/>
+          <path d="M120 660h500v-40H120z" stroke="rgba(244,239,225,.14)"/>        <!-- internal road -->
+          <path d="M120 200h40v420h-40z" stroke="rgba(244,239,225,.14)"/>
+        </g>
+        <!-- basement excavation line -->
+        <path d="M200 150h360v420H200z" fill="rgba(244,239,225,.03)" stroke="rgba(244,239,225,.2)" stroke-width="1.5" stroke-dasharray="6 7"/>
+        <!-- podium -->
+        <path d="M240 200h280v320H240z" fill="rgba(244,239,225,.05)" stroke="rgba(244,239,225,.3)" stroke-width="1.5"/>
+        <!-- tower footprint -->
+        <path d="M296 268h150v224H296z" fill="rgba(217,199,158,.12)" stroke="#D9C79E" stroke-width="2"/>
+        <path d="M296 340h150M296 420h150M371 268v224" stroke="rgba(217,199,158,.35)" stroke-width="1"/>
+        <!-- yards and stores -->
+        <g fill="none" stroke="rgba(244,239,225,.28)" stroke-width="1.5">
+          <path d="M70 520h150v150H70z"/><path d="M540 120h150v140H540z"/><path d="M520 680h160v90H520z"/>
+        </g>
+        <!-- crane radius + jib -->
+        <circle cx="370" cy="380" r="255" fill="rgba(217,199,158,.05)" stroke="#D9C79E" stroke-width="1.5" stroke-dasharray="8 10"/>
+        <g class="jib"><line x1="370" y1="380" x2="625" y2="380" stroke="#D9C79E" stroke-width="2.5"/><line x1="370" y1="380" x2="300" y2="380" stroke="#D9C79E" stroke-width="4"/><circle cx="592" cy="380" r="5" fill="#D9C79E"/></g>
+        <!-- gate opening -->
+        <path d="M72 690v16M112 690v16" stroke="#D9C79E" stroke-width="3"/>
+        <!-- north arrow and scale -->
+        <g stroke="rgba(244,239,225,.5)" fill="none" stroke-width="1.5"><path d="M660 110V70M660 70l-8 12M660 70l8 12"/></g>
+        <text x="660" y="130" text-anchor="middle" font-family="Poppins" font-size="13" fill="rgba(244,239,225,.5)">N</text>
+        <g stroke="rgba(244,239,225,.4)" stroke-width="1.5"><path d="M60 760h80M60 755v10M140 755v10"/></g>
+        <text x="100" y="782" text-anchor="middle" font-family="Poppins" font-size="12" fill="rgba(244,239,225,.4)">approx. 25 m</text>
+      </svg>
+      <!-- Hotspot positions are % of the plan box — move them to match your plan -->
+      <div class="hs" style="left:50%;top:46.3%"><div class="dot">TC</div><div class="lab">Tower crane · min 1.5 MT tip load</div></div>
+      <div class="hs" style="left:40%;top:34.5%"><div class="dot">H1</div><div class="lab">Builders / passenger hoist 1</div></div>
+      <div class="hs" style="left:60%;top:58%"><div class="dot">H2</div><div class="lab">Builders / passenger hoist 2</div></div>
+      <div class="hs" style="left:19.5%;top:72.5%"><div class="dot">S</div><div class="lab">Steel yard · cutting &amp; bending</div></div>
+      <div class="hs" style="left:83%;top:23%"><div class="dot">F</div><div class="lab">Formwork storage &amp; repair</div></div>
+      <div class="hs" style="left:81%;top:88%"><div class="dot">P</div><div class="lab">Concrete pump / SPB</div></div>
+      <div class="hs" style="left:12.5%;top:85%"><div class="dot">G</div><div class="lab">Site gate · unloading window</div></div>
+      <div class="note">Indicative layout — to be aligned with the issued site plan</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 9 · MACHINERY ================= -->
+<section class="slide dark" id="s-mach" data-title="Machinery">
+  <div class="pan">
+    <div class="bg img on-dark" data-img="assets/machinery.jpg"><div class="ph">Machinery photo<small>assets/machinery.jpg</small></div></div>
+    <div class="label rv"><span><b>08</b>&nbsp;&nbsp;Plant &amp; machinery</span></div>
+    <h2 class="title rv" style="--d:100">The right equipment, <em>brought in as work opens up</em>.</h2>
+    <div class="table" id="m-table"></div>
+  </div>
+</section>
+
+<!-- ================= 10 · FINISHING ================= -->
+<section class="slide light" id="s-fin" data-title="Rolling finishes">
+  <div class="pan">
+    <div class="label rv"><span><b>09</b>&nbsp;&nbsp;Rolling finishes</span></div>
+    <h2 class="title rv" style="--d:100">Finishes follow, <em>three floors behind</em>.</h2>
+    <div class="elev rv" style="--d:300"><svg id="f-elev" viewBox="0 0 520 650"></svg></div>
+    <div class="side">
+      <div class="mo rv" style="--d:400"><b id="f-month">12</b><span>Month</span></div>
+      <div class="legend" id="f-legend"></div>
+      <div class="foot rv" style="--d:900"><button class="cb" id="f-replay" title="Replay"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v5h5"/></svg></button>Every crew climbs with the tower — no one waits for the top.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 11 · ORGANISATION ================= -->
+<section class="slide light" id="s-org" data-title="Team">
+  <div class="pan">
+    <div class="label rv"><span><b>10</b>&nbsp;&nbsp;Project team</span></div>
+    <h2 class="title rv" style="--d:100"><em>72 people</em>, built around the tower cycle.</h2>
+    <div class="chart rv f" style="--d:200">
+      <div class="cols" id="o-cols"></div>
+      <div class="names" id="o-names"></div>
+      <div class="groups"><div style="grid-column:span 4;--c:var(--ink)"><b>49</b> delivering the work</div><div style="grid-column:span 4;--c:var(--n4)"><b>23</b> independently checking it</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 12 · CONTROLS ================= -->
+<section class="slide dark" id="s-ctrl" data-title="Controls">
+  <div class="pan">
+    <div class="bg img on-dark" data-img="assets/controls.jpg"><div class="ph">Site controls photo<small>assets/controls.jpg</small></div></div>
+    <div class="label rv"><span><b>11</b>&nbsp;&nbsp;Project controls</span></div>
+    <h2 class="title rv" style="--d:100">We catch slippage <em>early</em> — not after it happens.</h2>
+    <div class="cols">
+      <div class="cad rv" style="--d:300"><div class="top"><svg class="ring" viewBox="0 0 62 62"><circle class="ic-dial" cx="31" cy="31" r="24" fill="none" stroke="#D9C79E" stroke-width="1.5"/><g class="ic-hand"><line x1="31" y1="31" x2="31" y2="13" stroke="#D9C79E" stroke-width="2"/></g><circle cx="31" cy="31" r="2.5" fill="#D9C79E"/></svg><h4>Every day</h4></div>
+        <ul><li>Progress and manpower</li><li>Material consumption</li><li>Safety observations</li></ul></div>
+      <div class="cad rv" style="--d:450"><div class="top"><svg class="ring" viewBox="0 0 62 62"><rect class="ic-day" x="6" y="32" width="4" height="18" rx="1" fill="#D9C79E" style="animation-delay:1.1s"/><rect class="ic-day" x="14" y="28" width="4" height="22" rx="1" fill="#D9C79E" style="animation-delay:1.6500000000000001s"/><rect class="ic-day" x="22" y="24" width="4" height="26" rx="1" fill="#D9C79E" style="animation-delay:2.2s"/><rect class="ic-day" x="30" y="32" width="4" height="18" rx="1" fill="#D9C79E" style="animation-delay:2.75s"/><rect class="ic-day" x="38" y="28" width="4" height="22" rx="1" fill="#D9C79E" style="animation-delay:3.3000000000000003s"/><rect class="ic-day" x="46" y="24" width="4" height="26" rx="1" fill="#D9C79E" style="animation-delay:3.85s"/><rect class="ic-day" x="54" y="32" width="4" height="18" rx="1" fill="#D9C79E" style="animation-delay:4.4s"/></svg><h4>Every week</h4></div>
+        <ul><li>Planned vs actual</li><li>Floor cycle time</li><li>Procurement and drawings</li></ul></div>
+      <div class="cad rv" style="--d:600"><div class="top"><svg class="ring" viewBox="0 0 62 62"><path d="M8 50V10M8 50h46" fill="none" stroke="rgba(244,239,225,.35)" stroke-width="1.5"/><path class="ic-curve" d="M8 48C20 47 24 40 31 30 38 20 42 14 52 13" fill="none" stroke="#D9C79E" stroke-width="2"/><circle class="ic-dot" cx="52" cy="13" r="3.5" fill="#D9C79E"/></svg><h4>Every month</h4></div>
+        <ul><li>Baseline vs actual</li><li>Billing and cash flow</li><li>Cost to complete</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= QUALITY & SAFETY ================= -->
+<section class="slide light" id="s-qs" data-title="Quality & safety">
+  <div class="pan">
+    <div class="label rv"><span><b>12</b>&nbsp;&nbsp;Quality &amp; safety</span></div>
+    <h2 class="title rv" style="--d:100">Checked before every pour.<br><em>Protected on every floor.</em></h2>
+
+    <div class="q">
+      <div class="col-h rv" style="--d:250">Quality · hold points</div>
+      <div class="gates">
+        <div class="spine"><i id="q-spine"></i></div>
+        <div class="gate rv" style="--d:350"><div class="c"><span>1</span><svg viewBox="0 0 20 20"><path d="M4 10.5l4 4 8-9" fill="none" stroke="#F4EFE1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="24"/></svg></div><div><b>Mock-up approved</b><small>First area signed off before repeating</small></div><em>Hold</em></div>
+        <div class="gate rv" style="--d:420"><div class="c"><span>2</span><svg viewBox="0 0 20 20"><path d="M4 10.5l4 4 8-9" fill="none" stroke="#F4EFE1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="24"/></svg></div><div><b>Rebar &amp; cover</b><small>Bar sizes, spacing, cover blocks</small></div><em>Hold</em></div>
+        <div class="gate rv" style="--d:490"><div class="c"><span>3</span><svg viewBox="0 0 20 20"><path d="M4 10.5l4 4 8-9" fill="none" stroke="#F4EFE1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="24"/></svg></div><div><b>Formwork</b><small>Line, level and plumb</small></div><em>Hold</em></div>
+        <div class="gate rv" style="--d:560"><div class="c"><span>4</span><svg viewBox="0 0 20 20"><path d="M4 10.5l4 4 8-9" fill="none" stroke="#F4EFE1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="24"/></svg></div><div><b>Embedded items</b><small>MEP sleeves and inserts in place</small></div><em>Hold</em></div>
+        <div class="gate rv" style="--d:630"><div class="c"><span>5</span><svg viewBox="0 0 20 20"><path d="M4 10.5l4 4 8-9" fill="none" stroke="#F4EFE1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="24"/></svg></div><div><b>Pour card signed</b><small>Concrete ready, cubes scheduled</small></div><em>Hold</em></div>
+      </div>
+      <div class="release rv" id="q-release" style="--d:700"><i></i><span>POUR RELEASED</span></div>
+    </div>
+
+    <div class="s rv" style="--d:300">
+      <div class="col-h">Safety · four layers, every shift</div>
+      <svg viewBox="0 0 740 470" id="qs-svg"></svg>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 13 · MILESTONES ================= -->
+<section class="slide light" id="s-mile" data-title="Milestones">
+  <div class="pan">
+    <div class="label rv"><span><b>13</b>&nbsp;&nbsp;Milestones</span></div>
+    <h2 class="title rv" style="--d:100">The milestones we <em>commit to protect</em>.</h2>
+    <div class="tl"><i></i></div>
+    <div id="mile"></div>
+  </div>
+</section>
+
+<!-- ================= 14 · CLOSING ================= -->
+<section class="slide dark" id="s-end" data-title="Our commitment">
+  <div class="pan">
+    <div class="img on-dark" data-img="assets/closing.jpg"><div class="kb img" data-img="assets/closing.jpg" style="background-color:transparent"></div><div class="ph">Closing photograph<small>assets/closing.jpg</small></div></div>
+    <div class="content">
+      <h2 class="big"><span class="mask"><span style="--d:100">Our commitment</span></span><span class="mask"><span style="--d:220" class="c">to Brigade</span></span></h2>
+      <ul>
+        <li class="rv" style="--d:400"><svg viewBox="0 0 34 34"><path d="M8 17.5l6 6L27 11" fill="none" stroke="#D9C79E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="--d:400"/></svg>Safety first, on every floor</li>
+        <li class="rv" style="--d:520"><svg viewBox="0 0 34 34"><path d="M8 17.5l6 6L27 11" fill="none" stroke="#D9C79E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="--d:520"/></svg>A controlled 11-day floor cycle</li>
+        <li class="rv" style="--d:640"><svg viewBox="0 0 34 34"><path d="M8 17.5l6 6L27 11" fill="none" stroke="#D9C79E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="--d:640"/></svg>Finishes running alongside the structure</li>
+        <li class="rv" style="--d:760"><svg viewBox="0 0 34 34"><path d="M8 17.5l6 6L27 11" fill="none" stroke="#D9C79E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="--d:760"/></svg>Decisions driven by daily data</li>
+        <li class="rv" style="--d:880"><svg viewBox="0 0 34 34"><path d="M8 17.5l6 6L27 11" fill="none" stroke="#D9C79E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="--d:880"/></svg>The 40-month baseline, protected</li>
+      </ul>
+    </div>
+    <div class="contact">
+      <div class="rv" style="--d:1100"><b>KARRAHE KISHORE KUMAR</b>+91 85000 88888 · kishore@klcconstructions.in</div>
+      <div class="rv" style="--d:1200"><b>KARRAHE SREERAM</b>+91 85000 18888 · sreeram@klcconstructions.in</div>
+      <div class="ty rv" style="--d:1300">Thank you</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Chrome ================= -->
+<div class="chrome">
+  <img class="logo d" src="assets/klc-logo-dark.png" alt="KLC Constructions">
+  <img class="logo l" src="assets/klc-logo-light.png" alt="">
+  <div class="tag">BRIGADE NEOPOLIS · EXECUTION PLAN</div>
+  <div class="foot">
+    <div class="count"><b id="n-cur">01</b> / <span id="n-tot">14</span></div>
+    <div class="bar-wrap"><div class="bar"></div><div class="bar-fill" id="n-bar"></div></div>
+    <div class="now" id="n-title">Cover</div>
+    <div class="btns">
+      <button class="cb" id="b-prev" title="Previous (←)"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button class="cb" id="b-index" title="All slides (M)"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
+      <button class="cb" id="b-fs" title="Fullscreen (F)"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      <button class="cb" id="b-next" title="Next (→)"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<div class="drawer" id="drawer"><div class="panel"><h5>CONTENTS</h5><ol id="toc"></ol></div></div>
+</div>
+
+<script>
+/* ============================================================
+   Deck engine
+   ============================================================ */
+const stage=document.getElementById('stage');
+const slides=[...document.querySelectorAll('.slide')];
+let cur=-1, busy=false;
+const hooks={};
+
+function fit(){
+  const s=Math.min(innerWidth/1920,innerHeight/1080);
+  stage.style.transform=`scale(${s}) translate(-50%,-50%)`;
+}
+addEventListener('resize',fit);fit();
+
+function go(n,dir){
+  n=Math.max(0,Math.min(slides.length-1,n));
+  if(n===cur||busy) return;
+  dir=dir||(n>cur?'next':'prev');
+  const old=slides[cur], nu=slides[n];
+  if(old){
+    old.classList.remove('active','in-next','in-prev');
+    old.classList.add('leaving');
+    hooks[old.id]?.leave?.();
+    setTimeout(()=>old.classList.remove('leaving'),1000);
+  }
+  nu.classList.remove('leaving');
+  void nu.offsetWidth;
+  nu.classList.add('active');
+  if(cur>=0) nu.classList.add('in-'+dir);
+  cur=n; busy=true; setTimeout(()=>busy=false,650);
+  stage.dataset.theme=nu.classList.contains('dark')?'dark':'light';
+  document.getElementById('n-cur').textContent=String(n+1).padStart(2,'0');
+  document.getElementById('n-bar').style.transform=`scaleX(${(n+1)/slides.length})`;
+  document.getElementById('n-title').textContent=nu.dataset.title;
+  document.querySelectorAll('#toc li').forEach((li,i)=>li.classList.toggle('cur',i===n));
+  history.replaceState(null,'','#'+(n+1));
+  runCounters(nu);
+  hooks[nu.id]?.enter?.();
+}
+const next=()=>go(cur+1,'next'), prev=()=>go(cur-1,'prev');
+document.getElementById('n-tot').textContent=slides.length;
+document.getElementById('b-next').onclick=next;
+document.getElementById('b-prev').onclick=prev;
+document.getElementById('b-fs').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+const drawer=document.getElementById('drawer');
+document.getElementById('b-index').onclick=()=>drawer.classList.toggle('open');
+drawer.onclick=e=>{if(e.target===drawer)drawer.classList.remove('open')};
+document.getElementById('toc').innerHTML=slides.map((s,i)=>`<li><button data-i="${i}"><span>${String(i+1).padStart(2,'0')}</span>${s.dataset.title}</button></li>`).join('');
+document.getElementById('toc').onclick=e=>{const b=e.target.closest('button');if(b){drawer.classList.remove('open');go(+b.dataset.i)}};
+
+addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next()}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F')document.getElementById('b-fs').click();
+  else if(e.key==='m'||e.key==='M')drawer.classList.toggle('open');
+  else if(e.key==='Escape')drawer.classList.remove('open');
+});
+let tx=null;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx==null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>60)(d<0?next:prev)();tx=null});
+
+/* ---------- Counters ---------- */
+const ease=t=>t===1?1:1-Math.pow(2,-10*t);
+function runCounters(root){
+  root.querySelectorAll('[data-count]').forEach(el=>{
+    const to=+el.dataset.count, dec=+(el.dataset.dec||0);
+    const host=el.closest('[style*="--d"]'); const delay=(host?parseFloat(getComputedStyle(host).getPropertyValue('--d'))||0:0)+550;
+    const t0=performance.now()+delay, dur=1800;
+    const fmt=v=>el.hasAttribute('data-sep')?Math.round(v).toLocaleString('en-IN'):v.toFixed(dec);
+    el.textContent=fmt(0);
+    (function tick(now){
+      const p=Math.max(0,Math.min(1,(now-t0)/dur));
+      el.textContent=fmt(p>=1?to:to*ease(p));
+      if(p<1&&slides[cur]===root)requestAnimationFrame(tick);
+    })(performance.now());
+  });
+}
+
+/* ---------- Image slots: load file, else show placeholder; drop to preview ---------- */
+function setImg(el,src,onload){
+  const im=new Image();
+  im.onload=()=>{el.style.setProperty('--img',`url("${src}")`);el.classList.remove('empty');el.style.setProperty('--ar',im.naturalWidth/im.naturalHeight);onload&&onload(im)};
+  im.onerror=()=>el.classList.add('empty');
+  im.src=src;
+}
+document.querySelectorAll('[data-img]').forEach(el=>{
+  if(el.classList.contains('kb'))return;
+  setImg(el,el.dataset.img,()=>{el.querySelectorAll('.kb').forEach(k=>k.style.setProperty('--img',el.style.getPropertyValue('--img')))});
+  el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('drag')});
+  el.addEventListener('dragleave',()=>el.classList.remove('drag'));
+  el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('drag');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/')){const u=URL.createObjectURL(f);setImg(el,u,()=>el.querySelectorAll('.kb').forEach(k=>k.style.setProperty('--img',`url("${u}")`)))}});
+});
+
+/* ============================================================
+   Programme — playhead sweeps months, bars fill as it passes
+   ============================================================ */
+(()=>{
+  const S=document.getElementById('s-prog');
+  const ROWS=[ // [name, startMonth, endMonth, colour] — structure in navy tones, finishing in terracotta
+    ['Foundation & basement',0,6,'#8FA39A'],
+    ['Podium & Eco Desk',5,10,'#56766C'],
+    ['Tower — first floors',9,14,'#2F5249'],
+    ['Typical floors',14,34,'#1A322D'],
+    ['Finishing & handover',35,40,'#8C6E43']];
+  const W=1340, M=40;
+  const axis=S.querySelector('.axis'), grid=S.querySelector('.grid'), rows=S.querySelector('.rows');
+  [1,6,12,18,24,30,36,40].forEach(m=>axis.insertAdjacentHTML('beforeend',`<span style="left:${(m-.5)/M*100}%">${m}</span>`));
+  for(let m=0;m<=M;m+=6)grid.insertAdjacentHTML('beforeend',`<i style="left:${m/M*100}%"></i>`);
+  rows.innerHTML=ROWS.map((r,i)=>`<div class="row" style="top:${44+i*72}px"><div class="name">${r[0]}</div><div class="lane"><div class="b" style="left:${r[1]/M*100}%;background:${r[3]}"><span>${r[2]-r[1]} months</span></div></div></div>`).join('');
+  const bars=[...rows.querySelectorAll('.b')], cursor=S.querySelector('.head-cursor'), note=document.getElementById('g-note');
+  note.style.left='340px'; note.style.top=(44+4*72+80)+'px'; note.style.width='900px';
+  let raf;
+  function draw(m){
+    bars.forEach((b,i)=>{const r=ROWS[i];const w=Math.max(0,Math.min(m,r[2])-r[1]);b.style.width=(w/M*W)+'px'});
+    cursor.style.left=(340+m/M*W)+'px';cursor.firstChild.textContent='Month '+Math.round(m);
+    note.classList.toggle('on',m>=35);
+  }
+  hooks['s-prog']={
+    enter(){cancelAnimationFrame(raf);draw(0);cursor.style.opacity=1;const t0=performance.now()+900,dur=5200;
+      (function f(now){const p=Math.max(0,Math.min(1,(now-t0)/dur));const e=p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;draw(e*M);if(p<1)raf=requestAnimationFrame(f);else cursor.style.opacity=0})(performance.now())},
+    leave(){cancelAnimationFrame(raf)}
+  };
+})();
+
+/* ============================================================
+   Structure — OPTION 2: five phases, driven by the time-lapse
+   ============================================================ */
+(()=>{
+  const PH=[
+    {k:'01',n:'Foundation & basement',x:'Raft, footings and two basement levels',d:125,lv:'B1',sub:'PCC 30 · Raft 45 · B2 15 · B1 35 days'},
+    {k:'02',n:'Podium & Eco Desk',    x:'Ground to 4th podium, then the transfer floor',d:210,lv:'ED',sub:'Ground 45 · 1st–4th 30 each · Eco Desk 45 days'},
+    {k:'03',n:'Tower start-up',       x:'1st to 4th floor — mock-up approved, cycle settles',d:145,lv:'04',sub:'60 · 45 · 25 · 15 days'},
+    {k:'04',n:'Typical floors',       x:'5th to 52nd floor at 11 days each',d:528,lv:[5,52],sub:'48 floors · 11 days each'},
+    {k:'05',n:'Roof & closure',       x:'Terrace and head room complete the structure',d:70,lv:'HR',sub:'Terrace 25 · Head room 45 days'}];
+  const MO=['Month 1–6','Month 5–10','Month 9–14','Month 14–34','Month 34–35'];
+  const TOT=PH.reduce((a,p)=>a+p.d,0);
+  let acc=0; PH.forEach(p=>{p.f0=acc/TOT;acc+=p.d;p.f1=acc/TOT});
+  const S=document.getElementById('s-tower'), vid=document.getElementById('t-vid'), film=S.querySelector('.film'),
+        list=document.getElementById('t-phases'), cap=document.getElementById('t-cap'),
+        prog=document.getElementById('t-prog'), ticks=document.getElementById('t-ticks'),
+        dayEl=document.getElementById('t-day'), flEl=document.getElementById('t-floor'), playBtn=document.getElementById('t-play');
+  list.innerHTML=PH.map((p,i)=>`<button class="ph" data-i="${i}"><span class="k">${p.k}</span><span class="n">${p.n}</span><span class="d">${p.d} days</span><span class="x">${p.sub}</span></button>`).join('');
+  const items=[...list.children];
+  ticks.innerHTML=PH.map((p,i)=>`<span data-i="${i}" style="left:${(p.f0+p.f1)/2*100}%">${p.n.split(' ')[0]}</span>`).join('');
+  const tickEls=[...ticks.children];
+  let last=-1;
+  function paint(){
+    const dur=vid.duration||8, f=Math.min(1,(vid.currentTime||0)/dur);
+    let i=PH.findIndex(p=>f<p.f1); if(i<0)i=PH.length-1;
+    const p=PH[i], lp=(f-p.f0)/(p.f1-p.f0||1);
+    prog.style.transform=`scaleX(${f})`;
+    dayEl.innerHTML=Math.round(f*TOT)+'<small>days</small>';
+    let lv=p.lv; if(Array.isArray(lv))lv=String(Math.min(lv[1],lv[0]+Math.floor(lp*(lv[1]-lv[0]+1)))).padStart(2,'0');
+    flEl.textContent=lv;
+    items.forEach((b,k)=>{b.classList.toggle('done',k<i);b.classList.toggle('cur',k===i)});
+    tickEls.forEach((t,k)=>t.classList.toggle('on',k===i));
+    if(i!==last){last=i;
+      cap.innerHTML=`<div><div class="nm">${p.n}</div><div class="ds">${p.x}</div></div><div class="mo">${MO[i]}</div>`;
+      cap.classList.remove('swap');void cap.offsetWidth;cap.classList.add('swap');
+    }
+  }
+  const icon=v=>playBtn.innerHTML=v?'<svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg>':'<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  vid.addEventListener('timeupdate',paint);
+  vid.addEventListener('loadedmetadata',paint);
+  vid.addEventListener('play',()=>icon(true));
+  vid.addEventListener('pause',()=>icon(false));
+  playBtn.onclick=()=>{if(vid.ended||vid.currentTime>=(vid.duration||8)-.05)vid.currentTime=0;vid.paused?vid.play():vid.pause()};
+  document.getElementById('t-replay').onclick=()=>{vid.currentTime=0;last=-1;vid.play()};
+  const seek=i=>{vid.currentTime=(vid.duration||8)*PH[i].f0;last=-1;paint();vid.play()};
+  list.onclick=e=>{const b=e.target.closest('.ph');if(b)seek(+b.dataset.i)};
+  ticks.onclick=e=>{const t=e.target.closest('span');if(t)seek(+t.dataset.i)};
+  function start(){if(slides[cur]!==S)return;vid.playbackRate=0.45;
+    vid.play().then(()=>film.classList.remove('waiting')).catch(()=>film.classList.add('waiting'))}
+  document.getElementById('t-bigplay').onclick=()=>{film.classList.remove('waiting');vid.currentTime=0;last=-1;vid.play()};
+  ['keydown','pointerdown'].forEach(ev=>addEventListener(ev,()=>{if(slides[cur]===S&&vid.paused&&vid.currentTime===0)start()},{passive:true}));
+  hooks['s-tower']={
+    enter(){last=-1;vid.currentTime=0;vid.playbackRate=0.45;paint();setTimeout(start,900)},
+    leave(){vid.pause();film.classList.remove('waiting')}
+  };
+  paint();
+})();
+
+/* ============================================================
+   11-day cycle dial — changes only on hover / click
+   ============================================================ */
+(()=>{
+  const ACTS=[
+    {d:[1,2], n:'Verticals',      x:'Columns and core',            c:'#1A322D'},
+    {d:[3,4], n:'Slab & beams',   x:'Formwork and steel',          c:'#2F5249'},
+    {d:[5,6], n:'MEP & embeds',   x:'Sleeves and inserts',         c:'#56766C'},
+    {d:[7,8], n:'Inspection',     x:'Checks and approvals',        c:'#8FA39A'},
+    {d:[9],   n:'Release',        x:'Pour card cleared',           c:'#C3CEC6'},
+    {d:[10],  n:'Concrete',       x:'Slab pour',                   c:'#8C6E43'},
+    {d:[11],  n:'Reset',          x:'De-shutter, move up a floor', c:'#D9C79E'}];
+  const S=document.getElementById('s-cycle'), svg=document.getElementById('c-svg'), acts=document.getElementById('c-acts'), center=S.querySelector('.center');
+  const R=240, C=2*Math.PI*R, seg=C/11, gap=6;
+  const dayAct=d=>ACTS.findIndex(a=>a.d.includes(d));
+  let html='';
+  for(let d=1;d<=11;d++){
+    const a=ACTS[dayAct(d)], rot=-90+(d-1)*360/11;
+    html+=`<circle class="seg" data-a="${dayAct(d)}" r="${R}" stroke="${a.c}" stroke-dasharray="0 ${C}" transform="rotate(${rot})"/>`;
+    const ang=(rot+180/11)*Math.PI/180;
+    html+=`<text class="daynum" x="${Math.cos(ang)*302}" y="${Math.sin(ang)*302+6}" text-anchor="middle">${d}</text>`;
+  }
+  svg.innerHTML=html;
+  const segs=[...svg.querySelectorAll('.seg')];
+  acts.innerHTML=ACTS.map((a,i)=>`<button class="act rv" style="--d:${300+i*80}" data-a="${i}"><span class="dd">Day ${a.d.join('–')}</span><div><b>${a.n}</b><span>${a.x}</span></div></button>`).join('');
+  const btns=[...acts.children];
+  let timers=[];
+  function pick(i){const a=ACTS[i];
+    segs.forEach(s=>{s.classList.toggle('dim',+s.dataset.a!==i);s.classList.toggle('hi',+s.dataset.a===i)});
+    btns.forEach((b,k)=>b.classList.toggle('on',k===i));
+    center.innerHTML=`<div class="d">Day ${a.d.join('–')}</div><div class="t">${a.n}</div>`;
+    center.classList.remove('swap');void center.offsetWidth;center.classList.add('swap');
+  }
+  let sel=0, auto;
+  function cycle(){clearInterval(auto);auto=setInterval(()=>{sel=(sel+1)%ACTS.length;pick(sel)},3600)}
+  function take(i){sel=i;pick(i);cycle()}          // hovering takes over, then the cycle resumes
+  btns.forEach(b=>{b.onmouseenter=b.onclick=()=>take(+b.dataset.a)});
+  segs.forEach(s=>{s.onmouseenter=s.onclick=()=>take(+s.dataset.a)});
+  hooks['s-cycle']={
+    enter(){timers.forEach(clearTimeout);timers=[];
+      segs.forEach(s=>{s.style.transition='none';s.setAttribute('stroke-dasharray',`0 ${C}`);s.classList.remove('dim','hi')});
+      btns.forEach(b=>b.classList.remove('on'));
+      center.innerHTML='<div class="d">Typical floor</div><div class="t">11 days</div>';
+      segs.forEach((s,i)=>timers.push(setTimeout(()=>{s.style.transition='stroke-dasharray .5s cubic-bezier(.22,1,.36,1),opacity .5s,stroke-width .5s';s.setAttribute('stroke-dasharray',`${seg-gap} ${C}`)},700+i*110)));
+      clearInterval(auto);
+      timers.push(setTimeout(()=>{if(slides[cur]===S){sel=0;pick(0);cycle()}},700+11*110+500));
+    },
+    leave(){timers.forEach(clearTimeout);clearInterval(auto)}
+  };
+})();
+
+/* ============================================================
+   Machinery — unit blocks pop in
+   ============================================================ */
+(()=>{
+  const ROWS=[['i-crane','Tower crane',2,'Main lifting, 1.5 MT tip load'],
+    ['i-hoist','Builders / passenger hoist',2,'Materials and people up the tower'],
+    ['i-bar','Bar cutting machine',4,'Reinforcement processing'],
+    ['i-bar','Bar bending machine',4,'Reinforcement processing'],
+    ['i-pump','Self-propelled boom placer',3,'Concrete placing'],
+    ['i-pipe','Line pump',2,'Concrete pumping'],
+    ['i-bobcat','Bobcat',1,'Material handling on ground'],
+    ['i-tractor','Tractor',1,'Internal site movement'],
+    ['i-power','DG set',1,'Standby power, if in scope']];
+  const T=document.getElementById('m-table');
+  T.innerHTML=ROWS.map((r,i)=>`<div class="tr rv" style="--d:${300+i*80}"><div class="ic"><svg class="icon"><use href="#${r[0]}"/></svg></div><div class="nm">${r[1]}</div><div class="units">${'<i></i>'.repeat(r[2])}<b>${r[2]}</b></div><div class="pp">${r[3]}</div></div>`).join('');
+  let timers=[];
+  hooks['s-mach']={enter(){timers.forEach(clearTimeout);timers=[];
+    T.querySelectorAll('.tr').forEach((row,i)=>row.querySelectorAll('.units i').forEach((u,k)=>{u.classList.remove('on');timers.push(setTimeout(()=>u.classList.add('on'),900+i*80+k*140))}))},
+    leave(){timers.forEach(clearTimeout)}};
+})();
+
+/* ============================================================
+   Rolling finishes — the tower rises and each crew's colour climbs
+   behind it. Timing is driven by the structural schedule.
+   ============================================================ */
+(()=>{
+  const S=document.getElementById('s-fin'), elev=document.getElementById('f-elev');
+  const N=52, REL=3, LAG=[0,10,20,30,38,46,54,62];               // 8 trades, days after release
+  const Sd=f=>f<=1?395:f==2?440:f==3?465:f==4?480:480+(f-4)*11;   // structure complete, per floor
+  const T=(k,f)=>Sd(Math.min(N,f+REL))+LAG[k];
+  const GROUPS=[ // [name, colour, trade index that completes the group (-1 = structure)]
+    ['Structure','#1A322D',-1],
+    ['Blockwork & MEP','#56766C',1],
+    ['Plaster & waterproofing','#C3CEC6',3],
+    ['Flooring, ceiling & paint','#D9C79E',6],
+    ['Ready to hand over','#8C6E43',7]];
+  const done=(g,f,d)=>GROUPS[g][2]<0?Sd(f)<=d:T(GROUPS[g][2],f)<=d;
+  const top=(g,d)=>{let r=0;for(let f=1;f<=N;f++){if(done(g,f,d))r=f;else break}return r};
+  const D0=365, D1=1217, EMPTY='#E8E1CD';
+  const P=11, BASE=600, BX=40, BW=240;
+
+  let e='';
+  for(let f=1;f<=N;f++)e+=`<rect class="fl" x="${BX}" y="${BASE-f*P}" width="${BW}" height="${P-2}" fill="${EMPTY}"/>`;
+  e+=`<rect x="${BX+60}" y="${BASE-N*P-12}" width="${BW-120}" height="8" fill="${EMPTY}" id="f-cap"/>`;
+  e+=`<rect x="${BX-20}" y="${BASE}" width="${BW+40}" height="22" fill="#1A322D"/><line x1="0" y1="${BASE+24}" x2="${BX+BW+60}" y2="${BASE+24}" stroke="#1A322D" stroke-width="2"/>`;
+  e+=`<g id="f-lbls"></g>`;
+  elev.innerHTML=e;
+  const fls=[...elev.querySelectorAll('.fl')], cap=document.getElementById('f-cap'), lbls=document.getElementById('f-lbls');
+  document.getElementById('f-legend').innerHTML=GROUPS.map((g,i)=>`<div class="lg rv" style="--d:${500+i*80};--c:${g[1]}"><i></i><span>${g[0]}</span><b><small>L</small><span class="fv">0</span></b></div>`).join('');
+  const vals=[...S.querySelectorAll('.fv')], monthEl=document.getElementById('f-month');
+
+  let d=D0, raf;
+  function render(){
+    fls.forEach((r,i)=>{const f=i+1;let c=null;for(let g=GROUPS.length-1;g>=0;g--)if(done(g,f,d)){c=GROUPS[g][1];break}r.setAttribute('fill',c||'transparent');r.setAttribute('stroke',c?'none':'#D3CAB2')});
+    cap.setAttribute('fill',d>=1078?'#1A322D':'transparent');cap.setAttribute('stroke',d>=1078?'none':'#D3CAB2');
+    const tops=GROUPS.map((g,i)=>top(i,d));
+    tops.forEach((t,i)=>vals[i].textContent=t);
+    monthEl.textContent=Math.max(12,Math.round(d/30.42));
+    // labels only for structure and handover — the two fronts people need to see
+    const L=[[0,'Structure'],[4,'Handover']].filter(([g])=>tops[g]>0).map(([g,n])=>({n,y:BASE-tops[g]*P+P/2-1}));
+    if(L.length==2&&L[1].y<L[0].y+26)L[1].y=L[0].y+26;
+    lbls.innerHTML=L.map(o=>`<line x1="${BX+BW+8}" y1="${o.y}" x2="${BX+BW+34}" y2="${o.y}" stroke="#1A322D" stroke-opacity=".4"/><text class="lbl" x="${BX+BW+44}" y="${o.y+5}">${o.n}</text>`).join('');
+  }
+  function play(){cancelAnimationFrame(raf);d=D0;render();const t0=performance.now();
+    (function f(now){d=D0+Math.min(1,(now-t0)/12000)*(D1-D0);render();if(d<D1&&slides[cur]===S)raf=requestAnimationFrame(f)})(t0)}
+  document.getElementById('f-replay').onclick=play;
+  hooks['s-fin']={enter(){cancelAnimationFrame(raf);d=D0;render();setTimeout(()=>{if(slides[cur]===S)play()},1200)},leave(){cancelAnimationFrame(raf)}};
+  render();
+})();
+
+/* ============================================================
+   Team bar chart
+   ============================================================ */
+(()=>{
+  const D=[['Management',3,''],['Tower',23,'top'],['Non-tower',11,''],['Finishes',12,''],['Planning',4,'ctl'],['QS &amp; billing',4,'ctl'],['QA &amp; QC',7,'ctl'],['Safety',8,'ctl']];
+  const cols=document.getElementById('o-cols'), names=document.getElementById('o-names');
+  cols.innerHTML=D.map(d=>`<div class="col ${d[2]}"><div class="v" data-to="${d[1]}">0</div><div class="bar" data-h="${d[1]/25*380}"></div></div>`).join('');
+  names.innerHTML=D.map(d=>`<div>${d[0]}</div>`).join('');
+  let timers=[];
+  hooks['s-org']={enter(){timers.forEach(clearTimeout);timers=[];
+    [...cols.children].forEach((c,i)=>{const bar=c.querySelector('.bar'),v=c.querySelector('.v');bar.style.transition='none';bar.style.height=0;void bar.offsetWidth;bar.style.transition='';v.textContent=0;
+      timers.push(setTimeout(()=>{bar.style.height=bar.dataset.h+'px';
+        const to=+v.dataset.to,t0=performance.now();(function f(n){const p=Math.min(1,(n-t0)/1300);v.textContent=Math.round(to*ease(p));if(p<1)requestAnimationFrame(f)})(t0)},800+i*110))})},
+    leave(){timers.forEach(clearTimeout)}};
+})();
+
+/* ============================================================
+   Quality hold points — gates clear one by one, then the pour
+   is released; loops while the slide is on screen.
+   ============================================================ */
+(()=>{
+  const S=document.getElementById('s-qs'), gates=[...S.querySelectorAll('.gate')], spine=document.getElementById('q-spine'), rel=document.getElementById('q-release');
+  let step=0, timer;
+  function show(n){gates.forEach((g,i)=>g.classList.toggle('ok',i<n));spine.style.setProperty('--p',Math.max(0,n-1)/(gates.length-1));rel.classList.toggle('on',n>gates.length)}
+  function tick(){step++;if(step>gates.length+4)step=0;show(Math.min(step,gates.length+1))}
+  // safety: concentric layers of protection around every worker
+  const svg=document.getElementById('qs-svg'), CX=215, CY=235, R=[215,165,115,65];
+  const L=[['01','Daily toolbox talk','Briefing before every shift'],
+           ['02','Permit to work','No high-risk task without sign-off'],
+           ['03','Edge protection & nets','On every open slab'],
+           ['04','Harness & lifting zones','At height and under every lift']];
+  const RY=[92,192,292,392], TX=500;
+  let h='';
+  R.forEach((r,i)=>{h+=`<circle class="ring" pathLength="1" cx="${CX}" cy="${CY}" r="${r}" transform="rotate(-90 ${CX} ${CY})" style="--dl:${.5+i*.35}s"/>`});
+  R.forEach((r,i)=>{
+    const dy=Math.max(-r*.8,Math.min(r*.8,RY[i]-CY)), px=CX+Math.sqrt(r*r-dy*dy), py=CY+dy;
+    h+=`<g class="lay" style="--dl:${1.1+i*.35}s"><path class="lead" d="M${px} ${py}L${px+24} ${RY[i]}H${TX-18}"/><circle class="knot" cx="${px}" cy="${py}" r="5"/>`+
+       `<text class="n" x="${TX}" y="${RY[i]-22}">${L[i][0]}</text><text class="t" x="${TX}" y="${RY[i]+4}">${L[i][1]}</text><text class="u" x="${TX}" y="${RY[i]+28}">${L[i][2]}</text></g>`;
+  });
+  h+=`<g class="core"><text class="a" x="${CX}" y="${CY-6}">EVERY</text><text class="b" x="${CX}" y="${CY+20}">worker</text></g>`;
+  svg.innerHTML=h;
+  const rings=[...svg.querySelectorAll('.ring')], lays=[...svg.querySelectorAll('.lay')];
+  let li=-1, ltimer;
+  function hl(i){rings.forEach((r,k)=>r.classList.toggle('on',k===i));lays.forEach((g,k)=>{g.classList.toggle('on',k===i);g.querySelector('.lead').classList.toggle('on',k===i);g.querySelector('.knot').classList.toggle('on',k===i)})}
+  hooks['s-qs']={enter(){clearInterval(timer);clearInterval(ltimer);step=0;show(0);hl(-1);
+      setTimeout(()=>{if(slides[cur]===S){clearInterval(timer);timer=setInterval(tick,850)}},1400);
+      setTimeout(()=>{if(slides[cur]===S){clearInterval(ltimer);li=0;hl(0);ltimer=setInterval(()=>{li=(li+1)%R.length;hl(li)},2400)}},2900)},
+    leave(){clearInterval(timer);clearInterval(ltimer)}};
+})();
+
+/* ============================================================
+   Milestones timeline
+   ============================================================ */
+(()=>{
+  const M=[['75','days','Foundation & raft'],['45','days','Podium'],['60','days','1st floor'],['45','days','2nd floor mock-up'],
+    ['11','days / floor','Typical floors'],['20','days','Terrace'],['45','days','Head room'],['40','months','Handover']];
+  const el=document.getElementById('mile'), W=1680;
+  el.innerHTML=M.map((m,i)=>{const x=120+W*(i+.5)/M.length, d=800+i*(3000/M.length);
+    return `<div class="ms ${i%2?'down':'up'} ${i===M.length-1?'last':''}" style="left:${x}px">
+      <div class="dot" style="transition-delay:${d}ms"></div>
+      <div class="body" style="transition-delay:${d+120}ms"><div class="v">${m[0]}<small>${m[1]}</small></div><div class="t">${m[2]}</div></div></div>`}).join('');
+})();
+
+/* ---------- boot ---------- */
+addEventListener('hashchange',()=>{const n=parseInt(location.hash.slice(1));if(n)go(n-1)});
+const start=Math.max(1,Math.min(slides.length,parseInt(location.hash.slice(1))||1))-1;
+go(start);
+</script>
+</body>
+</html>
